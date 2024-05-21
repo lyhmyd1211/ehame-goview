@@ -10,14 +10,22 @@ import { requestInterval, previewScaleType, requestIntervalUnit } from '@/settin
 import { useChartHistoryStore } from '@/store/modules/chartHistoryStore/chartHistoryStore'
 // 全局设置
 import { useSettingStore } from '@/store/modules/settingStore/settingStore'
+// 历史类型
+import { HistoryActionTypeEnum, HistoryItemType, HistoryTargetTypeEnum } from '@/store/modules/chartHistoryStore/chartHistoryStore.d'
+// 画布枚举
+import { MenuEnum, SyncEnum } from '@/enums/editPageEnum'
+
 import {
-  HistoryActionTypeEnum,
-  HistoryItemType,
-  HistoryTargetTypeEnum
-} from '@/store/modules/chartHistoryStore/chartHistoryStore.d'
-import { MenuEnum } from '@/enums/editPageEnum'
-import { getUUID, loadingStart, loadingFinish, loadingError, isString, isArray } from '@/utils'
+  getUUID,
+  loadingStart,
+  loadingFinish,
+  loadingError,
+  isString,
+  isArray
+} from '@/utils'
+
 import {
+  ProjectInfoType,
   ChartEditStoreEnum,
   ChartEditStorage,
   ChartEditStoreType,
@@ -36,6 +44,14 @@ const settingStore = useSettingStore()
 export const useChartEditStore = defineStore({
   id: 'useChartEditStore',
   state: (): ChartEditStoreType => ({
+    // 项目数据
+    projectInfo: {
+      projectId: '',
+      projectName: '',
+      remarks: '',
+      thumbnail: '',
+      release: false
+    },
     // 画布属性
     editCanvas: {
       // 编辑区域 Dom
@@ -55,6 +71,8 @@ export const useChartEditStore = defineStore({
       isDrag: false,
       // 框选中
       isSelect: false,
+      // 同步中
+      saveStatus: SyncEnum.PENDING,
       // 代码编辑中
       isCodeEdit: false
     },
@@ -139,6 +157,9 @@ export const useChartEditStore = defineStore({
     componentList: []
   }),
   getters: {
+    getProjectInfo(): ProjectInfoType {
+      return this.projectInfo
+    },
     getMousePosition(): MousePositionType {
       return this.mousePosition
     },
@@ -204,6 +225,10 @@ export const useChartEditStore = defineStore({
     // * 设置 editCanvasConfig（需保存后端） 数据项
     setEditCanvasConfig<T extends keyof EditCanvasConfigType, K extends EditCanvasConfigType[T]>(key: T, value: K) {
       this.editCanvasConfig[key] = value
+    },
+    // * 设置 peojectInfo 数据项
+    setProjectInfo<T extends keyof ProjectInfoType, K extends ProjectInfoType[T]>(key: T, value: K) {
+      this.projectInfo[key] = value
     },
     // * 设置右键菜单
     setRightMenuShow(value: boolean) {

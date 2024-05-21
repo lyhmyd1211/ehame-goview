@@ -28,28 +28,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, computed } from 'vue'
-import { fetchRouteParamsLocation, setTitle } from '@/utils'
+import { ref, nextTick, computed, watchEffect } from 'vue'
+import { ResultEnum } from '@/enums/httpEnum'
+import { fetchRouteParamsLocation, httpErrorHandle, setTitle } from '@/utils'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
-import { EditCanvasConfigEnum } from '@/store/modules/chartEditStore/chartEditStore.d'
+import { ProjectInfoEnum, EditCanvasConfigEnum } from '@/store/modules/chartEditStore/chartEditStore.d'
+import { updateProjectApi } from '@/api/path'
+import { useSync } from '../../hooks/useSync.hook'
 import { icon } from '@/plugins'
 
-const { FishIcon } = icon.ionicons5
 const chartEditStore = useChartEditStore()
+const { dataSyncUpdate } = useSync()
+const { FishIcon } = icon.ionicons5
 
 const focus = ref<boolean>(false)
 const inputInstRef = ref(null)
 
-// 根据路由 id 参数获取项目信息
-const fetchProhectInfoById = () => {
-  const id = fetchRouteParamsLocation()
-  if (id.length) {
-    return id[0]
-  }
-  return ''
-}
+const title = ref<string>(fetchRouteParamsLocation())
 
-const title = ref<string>(fetchProhectInfoById() || '')
+watchEffect(() => {
+  title.value = chartEditStore.getProjectInfo.projectName || ''
+})
 
 const comTitle = computed(() => {
   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
@@ -67,8 +66,18 @@ const handleFocus = () => {
   })
 }
 
-const handleBlur = () => {
+const handleBlur = async () => {
   focus.value = false
+  chartEditStore.setProjectInfo(ProjectInfoEnum.PROJECT_NAME, title.value || '')
+  const res = (await updateProjectApi({
+    id: fetchRouteParamsLocation(),
+    projectName: title.value
+  }))
+  if (res && res.code === ResultEnum.SUCCESS) {
+    dataSyncUpdate()
+  } else {
+    httpErrorHandle()
+  }
 }
 </script>
 <style lang="scss" scoped>

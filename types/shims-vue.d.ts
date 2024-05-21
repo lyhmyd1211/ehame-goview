@@ -7,7 +7,3 @@ declare module '*.vue' {
 declare module 'lodash/*'
 declare module 'dom-helpers'
 declare module 'vue3-sketch-ruler';
-
-declare module 'lodash/*'
-declare module 'dom-helpers'
-declare module 'vue3-sketch-ruler';

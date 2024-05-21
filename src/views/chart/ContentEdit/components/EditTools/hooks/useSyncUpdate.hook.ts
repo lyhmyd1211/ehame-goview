@@ -9,7 +9,7 @@ import { SavePageEnum } from '@/enums/editPageEnum'
 import { editToJsonInterval } from '@/settings/designSetting'
 import { goDialog } from '@/utils'
 
-const { updateComponent } = useSync()
+const { updateComponent, dataSyncUpdate } = useSync()
 const chartEditStore = useChartEditStore()
 
 export const syncData = () => {
@@ -17,8 +17,9 @@ export const syncData = () => {
     message: '是否覆盖源视图内容，此操作不可撤回?',
     isMaskClosable: true,
     transformOrigin: 'center',
-    onPositiveCallback: () => {
+    onPositiveCallback: async () => {
       window['$message'].success('正在同步编辑器...')
+      dataSyncUpdate && (await dataSyncUpdate())
       dispatchEvent(new CustomEvent(SavePageEnum.CHART, { detail: chartEditStore.getStorageInfo() }))
     }
   })

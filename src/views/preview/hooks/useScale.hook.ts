@@ -6,6 +6,7 @@ import { PreviewScaleEnum } from '@/enums/styleEnum'
 export const SCALE_KEY = 'scale-value'
 
 export const useScale = (localStorageInfo: ChartEditStorageType) => {
+
   const entityRef = ref()
   const previewRef = ref()
   const width = ref(localStorageInfo.editCanvasConfig.width)

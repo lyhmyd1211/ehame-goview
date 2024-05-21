@@ -35,7 +35,7 @@
             lineNumbers: 'on',
             minimap: { enabled: true }
           }"
-        />
+          />
       </n-layout-content>
     </n-layout>
   </div>
@@ -46,10 +46,16 @@ import { ref } from 'vue'
 import { MonacoEditor } from '@/components/Pages/MonacoEditor'
 import { SavePageEnum } from '@/enums/editPageEnum'
 import { getSessionStorageInfo } from '../preview/utils'
-import { setSessionStorage, JSONStringify, JSONParse, setTitle, goDialog } from '@/utils'
+import { setSessionStorage, fetchRouteParamsLocation, JSONStringify, JSONParse, setTitle, goDialog } from '@/utils'
 import { StorageEnum } from '@/enums/storageEnum'
 import { icon } from '@/plugins'
+import { useSync } from '@/views/chart/hooks/useSync.hook'
+import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
+import { ProjectInfoEnum } from '@/store/modules/chartEditStore/chartEditStore.d'
 import type { ChartEditStorageType } from '../preview/index.d'
+
+const chartEditStore = useChartEditStore()
+const { dataSyncUpdate } = useSync()
 
 const { ChevronBackOutlineIcon, DownloadIcon, AnalyticsIcon } = icon.ionicons5
 const showOpenFilePicker: Function = (window as any).showOpenFilePicker
@@ -122,11 +128,16 @@ async function updateSync() {
     message: '是否覆盖源视图内容? 此操作不可撤！',
     isMaskClosable: true,
     transformOrigin: 'center',
-    onPositiveCallback: () => {
+    onPositiveCallback: async () => {
       try {
         const detail = JSONParse(content.value)
         delete detail.id
         // 保持id不变
+        // 带后端版本额外处理请求
+        if (dataSyncUpdate) {
+          chartEditStore.setProjectInfo(ProjectInfoEnum.PROJECT_ID, fetchRouteParamsLocation())
+          await dataSyncUpdate(false) // JSON界面保存不上传缩略图
+        }
         window.opener.dispatchEvent(new CustomEvent(SavePageEnum.JSON, { detail }))
         window['$message'].success('正在同步内容...')
       } catch (e) {
