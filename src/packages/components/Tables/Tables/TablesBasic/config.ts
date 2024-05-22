@@ -7,6 +7,7 @@ import dataJson from './data.json'
 
 const { dimensions, source } = dataJson
 export const option = {
+  modalId:'',
   dataset: { dimensions, source },
   pagination: {
     page: 1,

@@ -5,7 +5,7 @@
       组件 id：
       <n-text>{{ targetData.id }}</n-text>
     </n-text>
-    <!-- <chart-event></chart-event> -->
+    <chart-event></chart-event>
     <chart-event-interaction></chart-event-interaction>
     <chart-event-base-handle></chart-event-base-handle>
     <chart-event-advanced-handle></chart-event-advanced-handle>

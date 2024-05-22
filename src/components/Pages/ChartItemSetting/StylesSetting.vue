@@ -1,4 +1,10 @@
 <template>
+  <div v-show="targetData?.isModal">
+    <div >
+      <label>弹出框ID：</label>
+      <span>{{ targetData?.modalId }}</span>
+    </div>
+  </div>
   <div v-show="isGroup">
     <n-divider n-divider style="margin: 10px 0"></n-divider>
     <n-tag type="warning"> 解散分组「 {{ isCanvas ? '滤镜' : '滤镜 / 变换' }} 」也将消失!</n-tag>
@@ -174,6 +180,9 @@ import logoImg from '@/assets/logo.png'
 import { useDesignStore } from '@/store/modules/designStore/designStore'
 
 const props = defineProps({
+  targetData:{
+    type:Object as PropType<CreateComponentType | CreateComponentGroupType>
+  },
   isGroup: {
     type: Boolean,
     required: false
@@ -187,7 +196,7 @@ const props = defineProps({
     required: true
   },
 })
-
+console.log('targetData',props.targetData);
 const { HelpOutlineIcon } = icon.ionicons5
 
 // 百分比格式化 person

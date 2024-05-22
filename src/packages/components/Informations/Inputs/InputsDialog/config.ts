@@ -10,6 +10,7 @@ export const option = {
   [COMPONENT_INTERACT_EVENT_KET]: ComponentInteractEventEnum.DATA,
   // 默认值
   isShow: false,
+  clickData:{},
   // 暴露配置内容给用户
   dataset: [ ...dataJson.source] 
 }

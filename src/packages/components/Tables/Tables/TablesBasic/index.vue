@@ -38,7 +38,11 @@ import { computed, PropType, toRefs, watch, reactive, ref } from 'vue'
 import { CreateComponentType } from '@/packages/index.d'
 import { icon } from '@/plugins'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
+import { findLastIndex } from 'lodash'
+import { useTargetData } from '@/views/chart/ContentConfigurations/components/hooks/useTargetData.hook'
 
+
+const { targetData } = useTargetData()
 const props = defineProps({
   chartConfig: {
     type: Object as PropType<CreateComponentType>,
@@ -52,9 +56,20 @@ const rowProps = (row: any) => {
         return {
           style: 'cursor: pointer;',
           onClick: () => {
-            let list = chartEditStore.getComponentList
-            console.log(row,list);
+            let list = chartEditStore.getComponentList.filter(i=>i.isModal)
+            console.log(row,list,option.modalId);
             clickItem.value = row
+            if (list.length>0) {
+              let index = chartEditStore.fetchTargetIndex(list[0].id)
+              let modalIndex = list.findIndex(i=>i.id = list[0].modalId)
+              let newData = chartEditStore.getComponentList[index]
+              // newData.groupList[modalIndex].option = {
+              //   ...newData.groupList[modalIndex].option,
+              //   isShow:true,
+              //   clickData:row
+              // }
+              // chartEditStore.updateComponentList(index,newData)
+            }
           }
         }
       }
@@ -82,7 +97,8 @@ const { w, h } = toRefs(props.chartConfig.attr)
 
 const option = reactive({
   dataset: props.chartConfig.option.dataset,
-  style: props.chartConfig.option.style
+  style: props.chartConfig.option.style,
+  modalId:props.chartConfig.option.modalId
 })
 
 watch(

@@ -115,6 +115,7 @@ export interface PublicConfigType {
   id: string
   isGroup: boolean
   isModal:boolean
+  modalId:string
   isModalInstance:boolean
   attr: { x: number; y: number; w: number; h: number; zIndex: number; offsetX: number; offsetY: number }
   styles: {

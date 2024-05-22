@@ -48,6 +48,7 @@ export class PublicConfigClass implements PublicConfigType {
   public isGroup = false
   public isModalInstance = false
   public isModal = false
+  public modalId = ''
   // 基本信息
   public attr = { ...chartInitConfig, zIndex: -1 }
   // 基本样式
@@ -145,6 +146,7 @@ export class PublicModalGroupConfigClass extends PublicGroupConfigClass implemen
   public isModal = true
   // 成组
   public isGroup = true
+  public modalId = ''
   // 名称
   public chartConfig = {
     key: 'group',
@@ -158,7 +160,10 @@ export class PublicModalGroupConfigClass extends PublicGroupConfigClass implemen
     image: ''
   }
 
-  //modal弹出框内部组件
+  /**弹出框根组件 */
+  public modalRoot?:CreateComponentType|CreateComponentGroupType
+
+  /**弹出框内部组件 */
   public modalComponent?:CreateComponentType|CreateComponentGroupType
   
 }

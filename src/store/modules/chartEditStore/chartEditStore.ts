@@ -852,7 +852,15 @@ export const useChartEditStore = defineStore({
         groupClass.attr.h = groupAttr.b - groupAttr.t
 
         if (isModal) {
-          (groupClass as PublicModalGroupConfigClass).modalComponent = this.getTargetChart.selected.filter(i=>!i.isModalInstance)[0]
+          this.getTargetChart.selected.map(item=>{
+            if (!item.isModalInstance) {
+              (groupClass as PublicModalGroupConfigClass).modalComponent = item
+            }else{
+              (groupClass as PublicModalGroupConfigClass).modalRoot = item;
+              (groupClass as PublicModalGroupConfigClass).modalId =item.id;
+            }
+          })
+          
         }
        
         this.addComponentList(groupClass)

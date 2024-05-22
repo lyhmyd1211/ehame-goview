@@ -8,7 +8,7 @@
       size="small"
     >
     <setting-item-box name="触发的弹出框id" :alone="true">
-      <n-input v-model:value="getId" @change="inputChange"></n-input>  
+      <n-input v-model:value="targetData.option.modalId" @change="inputChange"></n-input>  
     </setting-item-box>
     </n-card>
   </n-collapse-item>
@@ -30,6 +30,11 @@ const { CloseIcon, AddIcon, HelpOutlineIcon } = icon.ionicons5
 const { targetData, chartEditStore } = useTargetData()
 const requestParamsTypeList = [RequestParamsTypeEnum.PARAMS, RequestParamsTypeEnum.HEADER]
 const getId = ref()
+
+const inputChange = (v:string)=>{
+  targetData.value.option.modalId = v
+
+}
 
 // const inputChange = (v:string)=>{
 //   targetData.value.events.advancedEvents = {...targetData.value.events.advancedEvents,
