@@ -9,12 +9,13 @@ import dataJson from './data.json'
 export const option = {
   [COMPONENT_INTERACT_EVENT_KET]: ComponentInteractEventEnum.DATA,
   // 默认值
-  componentId: '',
+  isShow: false,
   // 暴露配置内容给用户
   dataset: [ ...dataJson.source] 
 }
 
 export default class Config extends PublicConfigClass implements CreateComponentType {
+  
   public isModalInstance = true
   public key = InputsDialogConfig.key
   public attr = { ...chartInitConfig, w: 260, h: 300, zIndex: -1 }

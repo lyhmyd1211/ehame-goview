@@ -6,6 +6,7 @@
       ...getSizeStyle(groupData.attr),
       ...getFilterStyle(groupData.styles),
     }"
+    v-show="!groupData.isModal"
   >
     <div
       class="chart-item"
@@ -23,6 +24,7 @@
         :is="item.chartConfig.chartKey"
         :id="item.id"
         :chartConfig="item"
+        :groupData="groupData"
         :themeSetting="themeSetting"
         :themeColor="themeColor"
         :style="{

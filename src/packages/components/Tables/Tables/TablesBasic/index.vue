@@ -37,6 +37,7 @@
 import { computed, PropType, toRefs, watch, reactive, ref } from 'vue'
 import { CreateComponentType } from '@/packages/index.d'
 import { icon } from '@/plugins'
+import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 
 const props = defineProps({
   chartConfig: {
@@ -46,12 +47,13 @@ const props = defineProps({
 })
 
 const clickItem = ref()
-
+const chartEditStore = useChartEditStore()
 const rowProps = (row: any) => {
         return {
           style: 'cursor: pointer;',
           onClick: () => {
-            console.log(row);
+            let list = chartEditStore.getComponentList
+            console.log(row,list);
             clickItem.value = row
           }
         }

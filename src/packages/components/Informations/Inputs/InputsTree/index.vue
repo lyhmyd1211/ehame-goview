@@ -1,6 +1,7 @@
 <template>
   <div>
     <n-tree
+    :style="`width:${w}px;height:${h}px;`"
     block-line
     :data="option.value.dataset"
     :default-expanded-keys="option.value.defaultExpandedKeys"
@@ -28,7 +29,7 @@ const props = defineProps({
     required: true
   }
 })
-
+const { w, h } = toRefs(props.chartConfig.attr)
 const option = shallowReactive({
   value: {
     dataset: props.chartConfig.option.dataset,

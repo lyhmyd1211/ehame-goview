@@ -1038,6 +1038,17 @@ export const useChartEditStore = defineStore({
     },
     
     setModal(id: string|string[], isHistory = true):void{
+      
+      let index = 0
+      let attr = this.getComponentList[index].attr
+      this.getTargetChart.selected.map(item=>{
+        if (item.isModalInstance) {
+          index = this.fetchTargetIndex(item.id)
+        }else{
+          attr = this.getTargetChart.selected.filter(i=>!i.isModalInstance)[0].attr
+        }
+      })
+      this.getComponentList[index].attr = {...attr}
       this.setGroup(id,isHistory,true)
     },
 

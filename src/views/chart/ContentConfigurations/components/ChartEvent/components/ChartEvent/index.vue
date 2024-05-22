@@ -1,17 +1,14 @@
 <template>
-  <n-collapse-item title="组件事件" name="1" >
+  <n-collapse-item title="事件响应" name="1" >
     <template #header-extra>
-      
+      <label>点击事件</label>
     </template>
-
-   
-
     <n-card
       class="n-card-shallow"
       size="small"
     >
-    <setting-item-box name="触发的组件id" :alone="true">
-      <n-input v-model="getId"></n-input>  
+    <setting-item-box name="触发的弹出框id" :alone="true">
+      <n-input v-model:value="getId" @change="inputChange"></n-input>  
     </setting-item-box>
     </n-card>
   </n-collapse-item>
@@ -32,9 +29,17 @@ import { useTargetData } from '../../../hooks/useTargetData.hook'
 const { CloseIcon, AddIcon, HelpOutlineIcon } = icon.ionicons5
 const { targetData, chartEditStore } = useTargetData()
 const requestParamsTypeList = [RequestParamsTypeEnum.PARAMS, RequestParamsTypeEnum.HEADER]
-
 const getId = ref()
 
+// const inputChange = (v:string)=>{
+//   targetData.value.events.advancedEvents = {...targetData.value.events.advancedEvents,
+//     vnodeMounted:`
+//       "e.el.addEventListener('click', () => {
+//         components[${v}].ctx.chartConfig.option.isShow = !components[${v}].ctx.chartConfig.option.isShow
+//       }, false)"
+//     `
+//   }
+// }
 
 
 </script>

@@ -12,7 +12,7 @@ export const watermarkText = "GoView 低代码平台"
 export const groupTitle = "分组"
 
 //弹出框分组名称
-export const modalGroupTitle = "弹出框Modal"
+export const modalGroupTitle = "弹出框-已绑定"
 
 // 主题配置
 export const theme = {

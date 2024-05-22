@@ -37,6 +37,7 @@
           :class="animationsClass(item.styles.animations)"
           :is="item.chartConfig.chartKey"
           :chartConfig="item"
+          :groupData="groupData"
           :themeSetting="themeSetting"
           :themeColor="themeColor"
           :style="{

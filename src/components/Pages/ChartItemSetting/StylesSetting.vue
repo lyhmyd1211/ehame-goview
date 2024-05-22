@@ -3,7 +3,6 @@
     <n-divider n-divider style="margin: 10px 0"></n-divider>
     <n-tag type="warning"> 解散分组「 {{ isCanvas ? '滤镜' : '滤镜 / 变换' }} 」也将消失!</n-tag>
     <n-divider n-divider style="margin: 10px 0"></n-divider>
-    <label>分组ID：{{ id }}</label>
   </div>
 
   <collapse-item :name="isCanvas ? '滤镜' : '滤镜 / 变换'">
@@ -168,7 +167,7 @@
 
 <script setup lang="ts">
 import { ref, PropType } from 'vue'
-import { PickCreateComponentType, BlendModeEnumList } from '@/packages/index.d'
+import { PickCreateComponentType, BlendModeEnumList, CreateComponentType, CreateComponentGroupType } from '@/packages/index.d'
 import { SettingItemBox, SettingItem, CollapseItem } from '@/components/Pages/ChartItemSetting'
 import { icon } from '@/plugins'
 import logoImg from '@/assets/logo.png'
@@ -187,10 +186,6 @@ const props = defineProps({
     type: Object as PropType<Omit<PickCreateComponentType<'styles'>, 'animations'>>,
     required: true
   },
-  id:{
-    type: String,
-    default: ''
-  }
 })
 
 const { HelpOutlineIcon } = icon.ionicons5

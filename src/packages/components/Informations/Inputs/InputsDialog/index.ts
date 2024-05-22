@@ -5,7 +5,7 @@ export const InputsDialogConfig: ConfigType = {
   key: 'InputsDialog',
   chartKey: 'VInputsDialog',
   conKey: 'VCInputsDialog',
-  title: '弹窗',
+  title: '弹出框',
   category: ChatCategoryEnum.INPUTS,
   categoryName: ChatCategoryEnumName.INPUTS,
   package: PackagesCategoryEnum.INFORMATIONS,

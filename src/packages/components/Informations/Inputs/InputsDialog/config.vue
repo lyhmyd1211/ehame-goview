@@ -1,7 +1,7 @@
 <template>
   <!-- <collapse-item name="展开配置" :expanded="true">
-    <setting-item-box name="绑定组件ID" :alone="true">
-      <n-input v-model:value="optionData.componentId" @change="bindChange"></n-input>
+    <setting-item-box name="弹窗显隐" :alone="true">
+      <n-input v-model:value="optionData.isShow"></n-input>
     </setting-item-box>
   </collapse-item> -->
 </template>
