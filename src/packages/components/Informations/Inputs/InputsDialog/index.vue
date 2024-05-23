@@ -4,33 +4,10 @@
      >
     模态弹出框
     </div>
-    <n-modal v-model:show="chartConfig.option.isShow"  preset="card" title="text">
+    <n-modal v-model:show="modalData.isShow" display-directive="show"  preset="card" title="text">
       <suspense>
         <suspense-index :group-data="groupData"></suspense-index>
       </suspense>
-      <!-- <div v-if="groupData?.modalComponent?.groupList">
-        <component   class="edit-content-chart"
-          v-for="(item, index) in groupData?.modalComponent?.groupList" :key="index" 
-          :class="animationsClass(item.styles.animations)"
-          :is="item.chartConfig.chartKey"
-          :chartConfig="item"
-          :themeSetting="themeSetting"
-          :style="{
-            ...getFilterStyle(item.styles),
-            ...getTransformStyle(item.styles)
-          }" 
-          ></component>
-      </div>
-      <component
-          v-else   
-          class="edit-content-chart"
-          :is="groupData?.modalComponent?.chartConfig.chartKey"
-          :chartConfig="groupData?.modalComponent"
-          :themeSetting="themeSetting"
-          :style="{
-            ...getFilterStyle(groupData?.modalComponent?.styles),
-          }" 
-          ></component> -->
     </n-modal>
   </div>
 </template>
@@ -47,6 +24,7 @@ import { CreateComponentGroupType } from '@/packages/index.d'
 import { useLifeHandler,useChartDataPondFetch } from '@/hooks'
 import {PreviewRenderGroup} from '@/views/preview/components/PreviewRenderGroup'
 import suspenseIndex from './suspenseIndex.vue'
+import { ModalListType } from '@/store/modules/chartEditStore/chartEditStore.d'
 // import PreCom from '@/views/preview/components/PreviewRenderList'
 const props = defineProps({
   chartConfig: {
@@ -57,8 +35,6 @@ const props = defineProps({
     type:Object as PropType<PublicModalGroupConfigClass>
   }
 })
-// 初始化数据池
-const { initDataPond, clearMittDataPondMap } = useChartDataPondFetch()
 const chartEditStore = useChartEditStore()
 // 主题色
 const themeSetting = computed(() => {
@@ -73,35 +49,35 @@ const themeColor = computed(() => {
 })
 
 const { w, h } = toRefs(props.chartConfig.attr)
-const isShow = ref<Boolean>(false)
-const showModal = ()=>{
-  isShow.value  = true
-}
-
-
-const hideModal = ()=>{
-  isShow.value  = false
-}
-
-console.log('props.groupData?.modalComponent',props.groupData);
-const option = shallowReactive({
-  value: {
-    componentList:props.groupData?.modalComponent,
-    dataset: props.chartConfig.option.dataset,
-    isShow:props.chartConfig.option.isShow
+const modalData = computed<ModalListType>(()=>{
+  let data = chartEditStore.getModalList.filter(i=>i.modalId===props.groupData?.modalId)
+  if (data.length>0) {
+    return data[0]
+  }else{
+    return {
+      postData:{},
+      modalId:'',
+      isShow:false
+    }
   }
 })
 
 
-defineExpose({
-  showModal,
-  hideModal
+const option = shallowReactive({
+  value: {
+    componentList:props.groupData?.modalComponent,
+    dataset: props.chartConfig.option.dataset,
+  }
 })
 
-// 组件渲染结束初始化数据池
-clearMittDataPondMap()
+
+// defineExpose({
+//   showModal,
+//   hideModal
+// })
+
 onMounted(() => {
-  initDataPond(useChartEditStore)
+  console.log('chartConfig',props.groupData);
 })
 
 const { vChartRef } = useChartDataFetch(props.chartConfig, useChartEditStore)
@@ -113,7 +89,7 @@ watch(
     option.value = newData
   },
   {
-    immediate: true,
+    // immediate: true,
     deep: true
   }
 )

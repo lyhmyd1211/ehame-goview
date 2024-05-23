@@ -172,6 +172,12 @@ export type RecordChartType = {
   charts: CreateComponentType | CreateComponentGroupType | Array<CreateComponentType | CreateComponentGroupType>
   type: HistoryActionTypeEnum.CUT | HistoryActionTypeEnum.COPY
 }
+// 弹出框临时数据
+export type ModalListType = {
+  postData:Object,
+  modalId:string,
+  isShow:boolean
+}
 
 // Store 枚举
 export enum ChartEditStoreEnum {
@@ -182,6 +188,7 @@ export enum ChartEditStoreEnum {
   MOUSE_POSITION = 'mousePosition',
   TARGET_CHART = 'targetChart',
   RECORD_CHART = 'recordChart',
+  MODAL_LIST = 'modalList',
   // 以下需要存储
   EDIT_CANVAS_CONFIG = 'editCanvasConfig',
   REQUEST_GLOBAL_CONFIG = 'requestGlobalConfig',
@@ -246,6 +253,8 @@ export interface ChartEditStoreType {
   [ChartEditStoreEnum.RECORD_CHART]?: RecordChartType
   [ChartEditStoreEnum.REQUEST_GLOBAL_CONFIG]: RequestGlobalConfigType
   [ChartEditStoreEnum.COMPONENT_LIST]: Array<CreateComponentType | CreateComponentGroupType>
+  /**弹出框临时数据 */
+  [ChartEditStoreEnum.MODAL_LIST]:Array<ModalListType>
 }
 
 // 存储数据类型

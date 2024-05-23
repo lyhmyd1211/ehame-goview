@@ -23,7 +23,7 @@
             >
               <!-- 分组 -->
               <preview-render-group
-                v-if="groupData?.isGroup"
+                v-if="groupData?.modalComponent?.isGroup"
                 :groupData="(groupData.modalComponent as CreateComponentGroupType)"
                 :groupIndex="0"
                 :themeSetting="themeSetting"
@@ -36,6 +36,7 @@
                 :is="groupData?.modalComponent?.chartConfig.chartKey"
                 :id="groupData?.modalComponent?.id"
                 :chartConfig="groupData?.modalComponent"
+                :groupData="groupData"
                 :themeSetting="themeSetting"
                 :themeColor="themeColor"
                 :style="{ 
@@ -70,7 +71,7 @@
       >
         <!-- 分组 -->
         <preview-render-group
-          v-if="groupData?.isGroup"
+          v-if="groupData?.modalComponent?.isGroup"
           :groupData="(groupData.modalComponent as CreateComponentGroupType)"
           :groupIndex="0"
           :themeSetting="themeSetting"

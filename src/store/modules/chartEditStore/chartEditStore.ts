@@ -34,7 +34,8 @@ import {
   TargetChartType,
   RecordChartType,
   RequestGlobalConfigType,
-  EditCanvasConfigType
+  EditCanvasConfigType,
+  ModalListType
 } from './chartEditStore.d'
 
 const chartHistoryStore = useChartHistoryStore()
@@ -93,6 +94,9 @@ export const useChartEditStore = defineStore({
     },
     // 记录临时数据（复制等）
     recordChart: undefined,
+
+    //弹出框临时数据,是否显隐，传递的数据
+    modalList:[],
     // -----------------------
     // 画布属性（需存储给后端）
     editCanvasConfig: {
@@ -186,6 +190,9 @@ export const useChartEditStore = defineStore({
     },
     getSelectModal():number{
       return this.getTargetChart.selected.filter(i=>i.isModalInstance).length
+    },
+    getModalList():ModalListType[]{
+      return this.modalList
     }
   },
   actions: {
@@ -410,6 +417,9 @@ export const useChartEditStore = defineStore({
     updateComponentList(index: number, newData: CreateComponentType | CreateComponentGroupType) {
       if (index < 1 && index > this.getComponentList.length) return
       this.componentList[index] = newData
+      // this.$patch((state) => {
+      //   state.componentList = 
+      // })
     },
     // * 设置页面样式属性
     setPageStyle<T extends keyof CSSStyleDeclaration>(key: T, value: any): void {
@@ -1064,5 +1074,18 @@ export const useChartEditStore = defineStore({
     setUnModal(ids?: string[], callBack?: (e: CreateComponentType[]) => void, isHistory = true) {
       this.setUnGroup(ids)
     },
+    /**设置弹出框临时数据 */
+    setModalList(data:ModalListType){
+      let list = this.modalList
+      let index = list.findIndex(i=>i.modalId===data.modalId)
+      if (index>=0) {
+        list[index] = data
+      }else{
+        list.push(data)
+      }
+      this.$patch({
+        modalList:list
+      })
+    }
   }
 })

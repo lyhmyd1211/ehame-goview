@@ -1,7 +1,7 @@
 <template>
   <div
     class="chart-item"
-    v-for="(item, index) in chartEditStore.componentList"
+    v-for="(item, index) in componentList"
     :class="animationsClass(item.styles.animations)"
     :key="item.id"
     :style="{
@@ -50,11 +50,12 @@ import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore
 import { animationsClass, getFilterStyle, getTransformStyle, getBlendModeStyle, colorCustomMerge } from '@/utils'
 import { getSizeStyle, getComponentAttrStyle, getStatusStyle, getPreviewConfigStyle } from '../../utils'
 import { useLifeHandler } from '@/hooks'
+import { storeToRefs } from 'pinia'
 
 // 初始化数据池
 const { initDataPond, clearMittDataPondMap } = useChartDataPondFetch()
 const chartEditStore = useChartEditStore()
-
+const {componentList} = storeToRefs(chartEditStore)
 // const props = defineProps({
 //   localStorageInfo: {
 //     type: Object as PropType<ChartEditStorageType>,
