@@ -10,7 +10,8 @@
       ...getStatusStyle(item.status),
       ...getPreviewConfigStyle(item.preview),
       ...getBlendModeStyle(item.styles) as any,
-      ...getSizeStyle(item.attr)
+      ...getSizeStyle(item.attr),
+      visibility:!item.isModal?'visible':'hidden'
     }"
   >
     <!-- 分组 -->

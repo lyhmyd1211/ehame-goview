@@ -6,7 +6,6 @@
       ...getSizeStyle(groupData.attr),
       ...getFilterStyle(groupData.styles),
     }"
-    v-show="!groupData.isModal"
   >
     <div
       class="chart-item"
