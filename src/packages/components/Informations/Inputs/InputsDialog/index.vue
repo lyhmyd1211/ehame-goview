@@ -4,7 +4,7 @@
      >
     模态弹出框
     </div>
-    <n-modal v-model:show="modalData.isShow" display-directive="show"  preset="card" title="text">
+    <n-modal v-model:show="modalData.isShow" display-directive="show"  preset="card" :title="option.value.modalTitle">
       <suspense>
         <suspense-index :group-data="groupData"></suspense-index>
       </suspense>
@@ -67,6 +67,7 @@ const option = shallowReactive({
   value: {
     componentList:props.groupData?.modalComponent,
     dataset: props.chartConfig.option.dataset,
+    modalTitle:props.chartConfig.option.modalTitle
   }
 })
 

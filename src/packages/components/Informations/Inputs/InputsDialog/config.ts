@@ -5,14 +5,12 @@ import { chartInitConfig } from '@/settings/designSetting'
 import { COMPONENT_INTERACT_EVENT_KET } from '@/enums/eventEnum'
 import { interactActions, ComponentInteractEventEnum } from './interact'
 import { InputsDialogConfig } from './index'
-import dataJson from './data.json'
 export const option = {
   [COMPONENT_INTERACT_EVENT_KET]: ComponentInteractEventEnum.DATA,
   // 默认值
-  isShow: false,
-  clickData:{},
+  modalTitle:'提示',
   // 暴露配置内容给用户
-  dataset: [ ...dataJson.source] 
+  dataset: [] 
 }
 
 export default class Config extends PublicConfigClass implements CreateComponentType {

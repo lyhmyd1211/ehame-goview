@@ -1,9 +1,9 @@
 <template>
-  <!-- <collapse-item name="展开配置" :expanded="true">
-    <setting-item-box name="弹窗显隐" :alone="true">
-      <n-input v-model:value="optionData.isShow"></n-input>
+  <collapse-item name="展开配置" :expanded="true">
+    <setting-item-box name="弹出框标题" :alone="true">
+      <n-input v-model:value="optionData.modalTitle"></n-input>
     </setting-item-box>
-  </collapse-item> -->
+  </collapse-item>
 </template>
 
 <script lang="ts" setup>
@@ -22,12 +22,5 @@ const props = defineProps({
     type:Object as PropType<CreateComponentType | CreateComponentGroupType>
   }
 })
-
-const chartEditStore = useChartEditStore()
-// const bindChange = ()=>{
-
-//   //分组
-//   chartEditStore.setGroup([props.targetData?.id as string,props.optionData.componentId])
-// }
 
 </script>
