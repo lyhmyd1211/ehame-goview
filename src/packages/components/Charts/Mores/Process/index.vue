@@ -8,6 +8,8 @@
     :color="color"
     :rail-color="railColor"
     :offset-degree="offsetDegree"
+    :gap-degree="gapDegree"
+    :gap-offset-degree="gapOffsetDegree"
   >
     <n-text
       :style="{
@@ -46,12 +48,15 @@ const {
   indicatorPlacement,
   indicatorTextSize,
   offsetDegree,
-  dataset
+  dataset,
+  gapDegree,
+  gapOffsetDegree
 } = toRefs(props.chartConfig.option)
 
 const option = shallowReactive({
   dataset: configOption.dataset
 })
+
 
 // 手动更新
 watch(
@@ -69,6 +74,6 @@ watch(
 )
 // 预览更新
 useChartDataFetch(props.chartConfig, useChartEditStore, (newData: number) => {
-  option.dataset = toNumber(newData, 2)
+  props.chartConfig.option.dataset = toNumber(newData, 2)
 })
 </script>

@@ -1,101 +1,10 @@
 <template>
-  <div :class="`go-preview ${chartEditStore.editCanvasConfig.previewScaleType}`" @mousedown="dragCanvas">
-    <template v-if="showEntity">
-      <!-- 实体区域 -->
-      <div ref="entityRef" class="go-preview-entity">
-        <!-- 缩放层 -->
-        <div ref="previewRef" class="go-preview-scale">
-          <!-- 展示层 -->
-          <div :style="previewRefStyle" v-if="show">
-            <!-- 渲染层 -->
-            <div
-              class="chart-item"
-              :class="animationsClass(groupData?.styles.animations)"
-              :key="groupData?.id"
-              :style="{
-                ...getComponentAttrStyle(groupData?.attr, 0),
-                ...getTransformStyle(groupData?.styles),
-                ...getStatusStyle(groupData?.status),
-                ...getPreviewConfigStyle(groupData?.preview),
-                ...getBlendModeStyle(groupData?.styles) as any,
-                ...getSizeStyle(groupData?.attr)
-              }"
-            >
-              <!-- 分组 -->
-              <preview-render-group
-                v-if="groupData?.modalComponent?.isGroup"
-                :groupData="(groupData.modalComponent as CreateComponentGroupType)"
-                :groupIndex="0"
-                :themeSetting="themeSetting"
-                :themeColor="themeColor"
-              ></preview-render-group>
-
-              <!-- 单组件 -->
-              <component
-                v-else
-                :is="groupData?.modalComponent?.chartConfig.chartKey"
-                :id="groupData?.modalComponent?.id"
-                :chartConfig="groupData?.modalComponent"
-                :groupData="groupData"
-                :themeSetting="themeSetting"
-                :themeColor="themeColor"
-                :style="{ 
-                  ...getSizeStyle(groupData?.modalComponent?.attr),
-                  ...getFilterStyle(groupData?.modalComponent?.styles)
-                }"
-                v-on="useLifeHandler(groupData?.modalComponent)"
-              ></component>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
-    <template v-else>
+  <div >
       <!-- 缩放层 -->
-      <div ref="previewRef" class="go-preview-scale">
+      <div >
         <!-- 展示层 -->
-        <div :style="previewRefStyle" v-if="show">
-          <!-- 渲染层 -->
-          <div
-        class="chart-item"
-        :class="animationsClass(groupData.styles.animations)"
-        :key="groupData.id"
-        :style="{
-          ...getComponentAttrStyle(groupData.attr, 0),
-          ...getTransformStyle(groupData.styles),
-          ...getStatusStyle(groupData.status),
-          ...getPreviewConfigStyle(groupData.preview),
-          ...getBlendModeStyle(groupData.styles) as any,
-          ...getSizeStyle(groupData.attr)
-        }"
-      >
-        <!-- 分组 -->
-        <preview-render-group
-          v-if="groupData?.modalComponent?.isGroup"
-          :groupData="(groupData.modalComponent as CreateComponentGroupType)"
-          :groupIndex="0"
-          :themeSetting="themeSetting"
-          :themeColor="themeColor"
-        ></preview-render-group>
-
-        <!-- 单组件 -->
-        <component
-          v-else
-          :is="groupData?.modalComponent?.chartConfig.chartKey"
-          :id="groupData?.modalComponent?.id"
-          :chartConfig="groupData?.modalComponent"
-          :themeSetting="themeSetting"
-          :themeColor="themeColor"
-          :style="{ 
-            ...getSizeStyle(groupData?.modalComponent?.attr),
-            ...getFilterStyle(groupData?.modalComponent?.styles)
-          }"
-          v-on="useLifeHandler(groupData?.modalComponent)"
-        ></component>
+       <slot></slot>
       </div>
-        </div>
-      </div>
-    </template>
   </div>
 </template>
 
@@ -115,23 +24,17 @@ import { getSizeStyle, getComponentAttrStyle, getStatusStyle, getPreviewConfigSt
 import { PublicConfigClass,PublicModalGroupConfigClass } from '@/packages/public'
 import { useLifeHandler,useChartDataPondFetch } from '@/hooks'
 // const localStorageInfo: ChartEditStorageType = getSessionStorageInfo() as ChartEditStorageType
-defineProps({
-  groupData:{
-    type:Object as PropType<PublicModalGroupConfigClass >,
-      required:true
-  }
-})
 
-await getSessionStorageInfo()
+// await getSessionStorageInfo()
 const chartEditStore = useChartEditStore() 
 
-setTitle(`预览-${chartEditStore.editCanvasConfig.projectName}`)
 
 const previewRefStyle = computed(() => {
   return {
     overflow: 'hidden',
     ...getEditCanvasConfigStyle(chartEditStore.editCanvasConfig),
-    ...getFilterStyle(chartEditStore.editCanvasConfig)
+    ...getFilterStyle(chartEditStore.editCanvasConfig),
+    background:'none'
   }
 })
 

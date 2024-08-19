@@ -19,7 +19,7 @@
           <span class="func-keyword">async {{ eventName }}</span> (mouseEvent,components) {
         </p>
         <p class="go-ml-4">
-          <n-code :code="(targetData.events.baseEvent || {})[eventName] || ''" language="typescript"></n-code>
+          <n-code :code="(trueData.events.baseEvent || {})[eventName] || ''" language="typescript"></n-code>
         </p>
         <p>}<span>,</span></p>
       </div>
@@ -130,7 +130,19 @@ import { useTargetData } from '../../../hooks/useTargetData.hook'
 import { BaseEvent } from '@/enums/eventEnum'
 import { icon } from '@/plugins'
 
-const { targetData, chartEditStore } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 const { DocumentTextIcon, ChevronDownIcon, PencilIcon } = icon.ionicons5
 
 const EventTypeName = {
@@ -145,7 +157,7 @@ const showModal = ref(false)
 // 编辑区域控制
 const editTab = ref(BaseEvent.ON_CLICK)
 // events 函数模板
-let baseEvent = ref({ ...targetData.value.events.baseEvent })
+let baseEvent = ref({ ...trueData.value.events.baseEvent })
 // 事件错误标识
 const errorFlag = ref(false)
 
@@ -188,14 +200,14 @@ const saveEvents = () => {
   }
   if (Object.values(baseEvent.value).join('').trim() === '') {
     // 清空事件
-    targetData.value.events.baseEvent = {
+    trueData.value.events.baseEvent = {
       [BaseEvent.ON_CLICK]: undefined,
       [BaseEvent.ON_DBL_CLICK]: undefined,
       [BaseEvent.ON_MOUSE_ENTER]: undefined,
       [BaseEvent.ON_MOUSE_LEAVE]: undefined
     }
   } else {
-    targetData.value.events.baseEvent = { ...baseEvent.value }
+    trueData.value.events.baseEvent = { ...baseEvent.value }
   }
   closeEvents()
 }
@@ -204,7 +216,7 @@ watch(
   () => showModal.value,
   (newData: boolean) => {
     if (newData) {
-      baseEvent.value = { ...targetData.value.events.baseEvent }
+      baseEvent.value = { ...trueData.value.events.baseEvent }
     }
   }
 )

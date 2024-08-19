@@ -1,6 +1,17 @@
 <template>
   <!-- Echarts 全局设置 --> 
   <global-setting :optionData="optionData"></global-setting>
+  <CollapseItem name="滚动设置">
+    <SettingItemBox name="是否滚动">
+      <n-space>
+          <n-switch v-model:value="optionData.isScroll" size="small" />
+          <n-text>是否滚动</n-text>
+        </n-space>
+    </SettingItemBox>
+    <SettingItemBox name="滚动显示个数">
+      <n-input v-model:value="optionData.scrollNum"></n-input>
+    </SettingItemBox>
+  </CollapseItem>
   <CollapseItem v-for="(item, index) in seriesList" :key="index" :name="`柱状图-${index+1}`" :expanded="true">
     <SettingItemBox name="图形">
       <SettingItem name="宽度">
@@ -57,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, computed } from 'vue'
+import { PropType, computed, ref, watch } from 'vue'
 import { GlobalSetting, CollapseItem, SettingItemBox, SettingItem } from '@/components/Pages/ChartItemSetting'
 import { option } from './config'
 import { GlobalThemeJsonType } from '@/settings/chartThemes/index'
@@ -67,6 +78,9 @@ const props = defineProps({
     type: Object as PropType<GlobalThemeJsonType>,
     required: true
   }
+})
+watch(()=>props.optionData.scrollNum,(newData)=>{
+  props.optionData.dataZoom[0].endValue = newData-1
 })
 
 const seriesList = computed(() => {

@@ -12,12 +12,17 @@ export const seriesItem = {
     show: true,
     position: 'top',
     color: '#fff',
-    fontSize: 12
+    fontSize: 12,
+    rotate:0,
+    offset:[0,0]
   },
   itemStyle: {
     color: null,
     borderRadius: 2
   }
+}
+export const comOption = {
+  len:1
 }
 export const option = {
   tooltip: {
@@ -30,19 +35,23 @@ export const option = {
   },
 xAxis: {
     show: true,
-    type: 'category'
+    type: 'category',
+    axisLabel:{
+      rotate:30,
+      interval:0
+    }
   },
   yAxis: {
     show: true,
     type: 'value'
   },
   dataset: { ...dataJson },
-  series: [seriesItem, seriesItem]
+  series: [seriesItem]
 }
 
 export default class Config extends PublicConfigClass implements CreateComponentType {
   public key = BarCommonConfig.key
   public chartConfig = cloneDeep(BarCommonConfig)
   // 图表配置项
-  public option = echartOptionProfixHandle(option, includes)
+  public option = {seriesItem,...comOption,...echartOptionProfixHandle(option, includes)}
 }

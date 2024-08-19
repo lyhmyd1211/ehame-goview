@@ -56,7 +56,7 @@ export const option = {
   mapOptions: {
     pitch: 60,
     skyColor: '#53A9DE',
-    amapKey: 'd5f3e16589dbecae64d05fe90e2ba4f2',
+    amapKey: 'c487c515121d06ca31830f732fda5b5f',
     amapStyleKey: ThemeEnum.DARK,
     amapStyleKeyCustom: '',
     amapLon: 116.397428,

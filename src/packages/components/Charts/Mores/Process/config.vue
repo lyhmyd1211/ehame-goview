@@ -32,6 +32,12 @@
           <n-text>进行时动画</n-text>
         </n-space>
       </SettingItem>
+      <SettingItem name="缺口角度">
+        <n-input-number v-model:value="optionData.gapDegree" size="small" :min="0" :max="360"></n-input-number>
+      </SettingItem>
+      <SettingItem name="缺口位置">
+        <n-input-number v-model:value="optionData.gapOffsetDegree" size="small" :min="0" :max="100"></n-input-number>
+      </SettingItem>
     </SettingItemBox>
 
     <SettingItemBox name="指标">

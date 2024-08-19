@@ -2,6 +2,7 @@
   <div
     :class="animationsClass(groupData.styles.animations)"
     :id="groupData.id"
+    :ref="groupData.id"
     :style="{
       ...getSizeStyle(groupData.attr),
       ...getFilterStyle(groupData.styles),
@@ -19,13 +20,35 @@
       ...getBlendModeStyle(item.styles) as any
     }"
     >
+    <template v-if="item.key==='MapAmapInfoWindow'">
       <component
+        v-show="!item.isModalInstance"
         :is="item.chartConfig.chartKey"
         :id="item.id"
+        :ref="item.id"
         :chartConfig="item"
         :groupData="groupData"
         :themeSetting="themeSetting"
         :themeColor="themeColor"
+         @click="componentClick(item)"
+        :style="{
+          ...getSizeStyle(item.attr),
+          ...getFilterStyle(item.styles),
+        }"
+        v-on="useLifeHandler(item)"
+      ></component>
+    </template>
+     <template v-else>
+      <component
+        v-show="!item.isModalInstance"
+        :is="item.chartConfig.chartKey"
+        :id="item.id"
+        :ref="item.id"
+        :chartConfig="item"
+        :groupData="groupData"
+        :themeSetting="themeSetting"
+        :themeColor="themeColor"
+         @click="componentClick(item)"
         :style="{
           ...getSizeStyle(item.attr),
           ...getFilterStyle(item.styles),
@@ -33,6 +56,7 @@
         }"
         v-on="useLifeHandler(item)"
       ></component>
+     </template>
     </div>
   </div>
 </template>
@@ -43,6 +67,7 @@ import { CreateComponentGroupType } from '@/packages/index.d'
 import { animationsClass, getFilterStyle, getTransformStyle, getBlendModeStyle } from '@/utils'
 import { getSizeStyle, getComponentAttrStyle, getStatusStyle, getPreviewConfigStyle } from '../../utils'
 import { useLifeHandler } from '@/hooks'
+import { ModalListType, useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 
 const props = defineProps({
   groupData: {
@@ -62,6 +87,16 @@ const props = defineProps({
     required: true
   }
 })
+const chartEditStore = useChartEditStore()
+const componentClick = (item:any)=>{
+  if (!item.option.replaceCommonEvent&&item.option.modalId) {
+    let data:ModalListType  = {
+    modalId:item.option.modalId,
+    postData:item
+  } 
+    chartEditStore.setModalList(data)
+  }
+}
 </script>
 
 <style lang="scss" scoped>

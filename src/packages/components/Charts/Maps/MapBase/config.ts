@@ -99,6 +99,7 @@ export const option = {
       data: [],
       selectedMode: false,
       zoom: 1,
+      roam: true,
       geoIndex: 1,
       tooltip: {
         show: true,

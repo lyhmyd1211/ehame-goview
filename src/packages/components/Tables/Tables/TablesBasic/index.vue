@@ -27,7 +27,7 @@
       size="small"
       :columns="option.dataset.dimensions"
       :data="filterData"
-      :pagination="pagination"
+      :pagination="false"
       :row-props="rowProps"
     />
   </div>
@@ -42,6 +42,7 @@ import { useTargetData } from '@/views/chart/ContentConfigurations/components/ho
 import {
   ModalListType
 } from '@/store/modules/chartEditStore/chartEditStore.d'
+import { useChartDataFetch } from '@/hooks'
 
 const { targetData } = useTargetData()
 const props = defineProps({
@@ -56,14 +57,17 @@ const chartEditStore = useChartEditStore()
 const rowProps = (row: any) => {
         return {
           style: 'cursor: pointer;',
-          onClick: () => {
-            console.log(row,option.modalId);
-            let data:ModalListType  = {
-              modalId:option.modalId,
-              isShow:true,
-              postData:row
-            } 
-            chartEditStore.setModalList(data)
+          onClick: (e) => {
+            e.stopPropagation();
+            if (option.modalId) {
+                let data:ModalListType  = {
+                modalId:option.modalId,
+                isShow:true,
+                postData:row
+              } 
+              chartEditStore.setModalList(data)
+            }
+            
           }
         }
       }
@@ -108,6 +112,12 @@ watch(
     deep: true
   }
 )
+
+// 数据更新 (默认更新 dataset，若更新之后有其它操作，可添加回调函数)
+useChartDataFetch(props.chartConfig, useChartEditStore, (resData: any[]) => {
+  props.chartConfig.option.dataset = resData
+})
+
 </script>
 
 <style lang="scss" scoped>

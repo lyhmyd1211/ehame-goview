@@ -20,7 +20,10 @@ export enum InteractEvents {
 // 全局组件交互回调事件触发的类型（当然可以自定义名称）
 export enum InteractEventOn {
   CLICK = 'click',
-  CHANGE = 'change'
+  CHANGE = 'change',
+  ZOOM ='zoom',
+  ZOOMPlus = 'zoomPlus',
+  ZoomReduce = 'zoomReduce'
 }
 
 // 确定交互组件触发类型 key名称

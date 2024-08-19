@@ -7,8 +7,14 @@
       class="n-card-shallow"
       size="small"
     >
-    <setting-item-box name="触发的弹出框id" :alone="true">
-      <n-input v-model:value="targetData.option.modalId" @change="inputChange"></n-input>  
+    <setting-item-box name="弹框id" :alone="true">
+      <n-input v-model:value="trueData.option.modalId" @change="inputChange"></n-input>  
+      <n-space>
+        <n-checkbox v-model:checked="trueData.option.modalClose">
+          关闭按钮
+        </n-checkbox>
+      </n-space>
+     
     </setting-item-box>
     </n-card>
   </n-collapse-item>
@@ -27,12 +33,24 @@ import { goDialog } from '@/utils'
 import { useTargetData } from '../../../hooks/useTargetData.hook'
 
 const { CloseIcon, AddIcon, HelpOutlineIcon } = icon.ionicons5
-const { targetData, chartEditStore } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 const requestParamsTypeList = [RequestParamsTypeEnum.PARAMS, RequestParamsTypeEnum.HEADER]
 const getId = ref()
 
 const inputChange = (v:string)=>{
-  targetData.value.option.modalId = v
+  trueData.value.option.modalId = v
 
 }
 

@@ -6,6 +6,10 @@
     </div>
   </div>
   <div v-show="isGroup">
+    <div >
+      <label>分组ID：</label>
+      <span>{{ targetData?.id }}</span>
+    </div>
     <n-divider n-divider style="margin: 10px 0"></n-divider>
     <n-tag type="warning"> 解散分组「 {{ isCanvas ? '滤镜' : '滤镜 / 变换' }} 」也将消失!</n-tag>
     <n-divider n-divider style="margin: 10px 0"></n-divider>
@@ -196,7 +200,6 @@ const props = defineProps({
     required: true
   },
 })
-console.log('targetData',props.targetData);
 const { HelpOutlineIcon } = icon.ionicons5
 
 // 百分比格式化 person

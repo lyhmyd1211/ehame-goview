@@ -44,5 +44,5 @@ export const setOption = <T extends typeof VChart | undefined, D>(instance: T, d
   if (!instance) return
   const option = instance.getOption()
   option.dataset = null
-  instance.setOption(data)
+  instance.setOption(data,false)
 }

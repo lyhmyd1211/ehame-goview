@@ -44,7 +44,7 @@ export const saveProjectApi = async (data: object) => {
     const res = await http(RequestHttpEnum.POST)(
       `${ModuleTypeEnum.PROJECT}/save/data`,
       data,
-      ContentTypeEnum.FORM_URLENCODED
+      ContentTypeEnum.JSON
     )
     return res
   } catch {
@@ -91,6 +91,7 @@ export const uploadFile = async (data: object) => {
        */
       fileName: string,
       fileurl: string,
+      link:string,
     }>(`${ModuleTypeEnum.PROJECT}/upload`, data, ContentTypeEnum.FORM_DATA)
     return res
   } catch {

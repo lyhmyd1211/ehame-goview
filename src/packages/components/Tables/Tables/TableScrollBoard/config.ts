@@ -3,8 +3,10 @@ import { CreateComponentType } from '@/packages/index.d'
 import { TableScrollBoardConfig } from './index'
 import cloneDeep from 'lodash/cloneDeep'
 import dataJson from './data.json'
-
+import { ComponentInteractEventEnum, interactActions } from './interact'
+import { COMPONENT_INTERACT_EVENT_KET } from '@/enums/eventEnum'
 export const option = {
+  [COMPONENT_INTERACT_EVENT_KET]: ComponentInteractEventEnum.DATA,
   header: ['列1', '列2', '列3'],
   dataset: dataJson,
   index: true,
@@ -21,6 +23,7 @@ export const option = {
 
 export default class Config extends PublicConfigClass implements CreateComponentType {
   public key = TableScrollBoardConfig.key
+  public interactActions = interactActions
   public chartConfig = cloneDeep(TableScrollBoardConfig)
   public option = cloneDeep(option)
 }

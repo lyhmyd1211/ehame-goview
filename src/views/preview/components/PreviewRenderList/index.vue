@@ -11,7 +11,6 @@
       ...getPreviewConfigStyle(item.preview),
       ...getBlendModeStyle(item.styles) as any,
       ...getSizeStyle(item.attr),
-      visibility:!item.isModal?'visible':'hidden'
     }"
   >
     <!-- 分组 -->
@@ -21,16 +20,20 @@
       :groupIndex="index"
       :themeSetting="themeSetting"
       :themeColor="themeColor"
+      v-show="!item.isModal"
     ></preview-render-group>
 
     <!-- 单组件 -->
     <component
       v-else
+      v-show="!item.isModal&&!item.isModalInstance"
       :is="item.chartConfig.chartKey"
       :id="item.id"
+      :ref="item.id"
       :chartConfig="item"
       :themeSetting="themeSetting"
       :themeColor="themeColor"
+      @click="componentClick(item)"
       :style="{ 
         ...getSizeStyle(item.attr),
         ...getFilterStyle(item.styles)
@@ -52,6 +55,7 @@ import { animationsClass, getFilterStyle, getTransformStyle, getBlendModeStyle, 
 import { getSizeStyle, getComponentAttrStyle, getStatusStyle, getPreviewConfigStyle } from '../../utils'
 import { useLifeHandler } from '@/hooks'
 import { storeToRefs } from 'pinia'
+import { ModalListType } from '@/store/modules/chartEditStore/chartEditStore'
 
 // 初始化数据池
 const { initDataPond, clearMittDataPondMap } = useChartDataPondFetch()
@@ -75,6 +79,16 @@ const themeColor = computed(() => {
   const colorCustomMergeData = colorCustomMerge(chartEditStore.editCanvasConfig.chartCustomThemeColorInfo)
   return colorCustomMergeData[chartEditStore.editCanvasConfig.chartThemeColor]
 })
+
+const componentClick = (item:any)=>{
+  if (!item.option.replaceCommonEvent&&item.option.modalId) {
+    let data:ModalListType  = {
+    modalId:item.option.modalId,
+    postData:item
+  } 
+    chartEditStore.setModalList(data)
+  }
+}
 
 // 组件渲染结束初始化数据池
 clearMittDataPondMap()

@@ -1,8 +1,8 @@
 <template>
-  <div class="go-chart-configurations-animations" v-if="targetData">
+  <div class="go-chart-configurations-animations" v-if="trueData">
     <n-button
       class="clear-btn go-my-2"
-      :disabled="!targetData.styles.animations.length"
+      :disabled="!trueData.styles.animations.length"
       @click="clearAnimation"
     >
       清除动画
@@ -45,7 +45,19 @@ const designStore = useDesignStore()
 
 const hoverPreviewAnimate = ref('')
 
-const { targetData } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 
 // 颜色
 const themeColor = computed(() => {
@@ -54,19 +66,19 @@ const themeColor = computed(() => {
 
 // * 选中的动画样式
 const activeIndex = (value: string) => {
-  const selectValue = targetData.value.styles.animations
+  const selectValue = trueData.value.styles.animations
   if (!selectValue.length) return false
   return selectValue[0] === value
 }
 
 // * 清除动画
 const clearAnimation = () => {
-  targetData.value.styles.animations = []
+  trueData.value.styles.animations = []
 }
 
 // * 新增动画，现只支持一种
 const addAnimation = (item: { label: string; value: string }) => {
-  targetData.value.styles.animations = [item.value]
+  trueData.value.styles.animations = [item.value]
 }
 </script>
 

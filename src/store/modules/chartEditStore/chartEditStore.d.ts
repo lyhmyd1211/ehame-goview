@@ -192,7 +192,9 @@ export enum ChartEditStoreEnum {
   // 以下需要存储
   EDIT_CANVAS_CONFIG = 'editCanvasConfig',
   REQUEST_GLOBAL_CONFIG = 'requestGlobalConfig',
-  COMPONENT_LIST = 'componentList'
+  COMPONENT_LIST = 'componentList',
+  SHADOW_LIST='shadowList',
+  CUR_APIDATA='curApiData'
 }
 
 // 请求公共类型
@@ -255,6 +257,9 @@ export interface ChartEditStoreType {
   [ChartEditStoreEnum.COMPONENT_LIST]: Array<CreateComponentType | CreateComponentGroupType>
   /**弹出框临时数据 */
   [ChartEditStoreEnum.MODAL_LIST]:Array<ModalListType>
+  [ChartEditStoreEnum.SHADOW_LIST]:Array<CreateComponentType | CreateComponentGroupType>
+
+  [ChartEditStoreEnum.CUR_APIDATA]:any
 }
 
 // 存储数据类型

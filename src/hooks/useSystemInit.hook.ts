@@ -2,8 +2,8 @@ import { useSystemStore } from '@/store/modules/systemStore/systemStore'
 import { SystemStoreEnum } from '@/store/modules/systemStore/systemStore.d'
 import { ResultEnum } from '@/enums/httpEnum'
 import { ossUrlApi } from '@/api/path'
-
-
+import { useRoute } from 'vue-router'
+import { setSessionStorage } from '@/utils'
 // * 初始化
 export const useSystemInit = async () => {
   const systemStore = useSystemStore()
@@ -18,6 +18,14 @@ export const useSystemInit = async () => {
     }
   }
 
+  const route = useRoute()
+  const getToken = ()=>{
+    let token = route.query.token
+    console.log('route',token,route);
+    setSessionStorage('token',token)
+  }
+
   // 执行
-  getOssUrl()
+  // getOssUrl()
+  // getToken()
 }

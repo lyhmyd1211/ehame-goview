@@ -1,6 +1,6 @@
 import { Router } from 'vue-router';
 import { PageEnum, PreviewEnum } from '@/enums/pageEnum'
-import { loginCheck } from '@/utils'
+import { loginCheck, setCookie } from '@/utils'
 
 // 路由白名单
 const routerAllowList = [
@@ -9,7 +9,10 @@ const routerAllowList = [
   // 预览
   PreviewEnum.CHART_PREVIEW_NAME
 ]
-
+function getQueryParam(param:string) {
+  let searchParams = new URLSearchParams(window.location.search);
+  return searchParams.get(param);
+}
 export function createRouterGuards(router: Router) {
   // 前置
   router.beforeEach(async (to, from, next) => {
@@ -19,7 +22,16 @@ export function createRouterGuards(router: Router) {
     if (!window.route) window.route = {params: {}}
     // @ts-ignore
     Object.assign(window.route.params, to.query)
-
+    let token = getQueryParam('token')
+    let tenantId = getQueryParam('TENANT-ID')
+    if (token) {
+      sessionStorage.setItem('token',token as string)
+      setCookie('token',token as string,1)
+    }
+    if (tenantId) {
+      sessionStorage.setItem('tenant_id',tenantId as string)
+      setCookie('tenant_id',tenantId as string,1)
+    }
     const Loading = window['$loading'];
     Loading && Loading.start();
     const isErrorPage = router.getRoutes().findIndex((item) => item.name === to.name);
@@ -28,9 +40,9 @@ export function createRouterGuards(router: Router) {
     }
 
     // @ts-ignore
-    if (!routerAllowList.includes(to.name) && !loginCheck()) {
-      next({ name: PageEnum.BASE_LOGIN_NAME })
-    }
+    // if (!routerAllowList.includes(to.name) && !loginCheck()) {
+    //   next({ name: PageEnum.BASE_LOGIN_NAME })
+    // }
     next()
   })
 

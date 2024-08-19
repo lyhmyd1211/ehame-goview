@@ -1,4 +1,5 @@
 import { MapBaseConfig } from './MapBase/index'
 import { MapAmapConfig } from './MapAmap/index'
-
-export default [MapBaseConfig, MapAmapConfig]
+import { MapAmapMaskConfig } from './MapAmapMask/index'
+import { MapAmapInfoWindowConfig } from './MapAmapInfoWindow/index'
+export default [MapBaseConfig, MapAmapConfig,MapAmapMaskConfig,MapAmapInfoWindowConfig]

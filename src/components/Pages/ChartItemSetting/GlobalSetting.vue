@@ -193,6 +193,10 @@
       <setting-item name="偏移量">
         <n-input-number v-model:value="yAxis.axisLabel.rotate" :min="-90" :max="90" size="small"></n-input-number>
       </setting-item>
+      <setting-item name="自定义格式化标签" alone >
+          <n-input v-model:value="yAxis.axisLabel.formatter" size="small"  type="textarea" placeholder="支持模板和函数，参考echarts官网" />
+          <n-text :depth="3">支持模板和函数参考<a href="https://echarts.apache.org/zh/option.html#series-pie.label.formatter" target="_blank">echarts官网</a></n-text>
+      </setting-item>
     </setting-item-box>
     <setting-item-box name="轴线">
       <setting-item name="展示">
@@ -333,16 +337,27 @@
     </setting-item-box>
     <global-setting-position :targetData="visualMap"></global-setting-position>
   </collapse-item>
+
+  <collapse-item v-if="tooltip" name="提示框">
+    <template #header>
+      <n-switch v-model:value="tooltip.show" size="small"></n-switch>
+    </template>
+    <setting-item-box name="格式化内容" alone>
+          <n-input v-model:value="tooltip.formatter" size="small"  type="textarea" placeholder="支持模板或函数，参考echarts官网" />
+          <n-text :depth="3">支持模板或函数，参考<a href="https://echarts.apache.org/zh/option.html#tooltip.formatter" target="_blank">echarts官网</a></n-text>
+    </setting-item-box>
+  </collapse-item>
 </template>
 
 <script setup lang="ts">
-import { PropType, computed, watch } from 'vue'
+import { PropType, computed, ref, watch } from 'vue'
 import { GlobalThemeJsonType } from '@/settings/chartThemes/index'
 import { axisConfig, legendConfig } from '@/packages/chartConfiguration/echarts/index'
 import { CollapseItem, SettingItemBox, SettingItem, GlobalSettingPosition } from '@/components/Pages/ChartItemSetting'
 import { icon } from '@/plugins'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import EchartsRendererSetting from './EchartsRendererSetting.vue'
+import { translateStr } from '@/api/http'
 
 const { HelpOutlineIcon } = icon.ionicons5
 
@@ -388,6 +403,10 @@ const visualMap = computed(() => {
   return props.optionData.visualMap
 })
 
+const tooltip = computed(()=>{
+  return props.optionData.tooltip
+})
+
 // 监听legend color颜色改变type = scroll的颜色
 watch(() => legend.value && legend.value.textStyle.color, (newVal) => {
   if (legend.value && newVal) {
@@ -401,4 +420,11 @@ watch(() => legend.value && legend.value.textStyle.color, (newVal) => {
   immediate: true,
   deep: true,
 })
+
+// const formatter = ref()
+// const inputChange = ()=>{
+//   props.optionData.tooltip.formatter =  translateStr(formatter.value)
+//   console.log('变化',props.optionData.tooltip.formatter);
+// }
+
 </script>

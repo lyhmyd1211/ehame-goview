@@ -31,7 +31,7 @@ const RootRoute: Array<RouteRecordRaw> = [
 export const constantRouter: any[] = [LoginRoute, ...RootRoute, ReloadRoute];
 
 const router = createRouter({
-  history: createWebHashHistory(''),
+  history: createWebHashHistory('/gv/'),
   routes: constantRouter,
   strict: true,
 })

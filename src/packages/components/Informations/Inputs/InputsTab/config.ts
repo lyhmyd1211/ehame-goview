@@ -27,7 +27,10 @@ export const option = {
       label: '选项3',
       value: '3'
     }
-  ]
+  ],
+  fontColor:'#1f2225',
+  activeColor:'#18a058',
+  paneId:[],
 }
 
 export default class Config extends PublicConfigClass implements CreateComponentType {

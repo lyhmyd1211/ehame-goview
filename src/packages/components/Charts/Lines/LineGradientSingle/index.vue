@@ -82,5 +82,9 @@ watch(
   }
 )
 
-const { vChartRef } = useChartDataFetch(props.chartConfig, useChartEditStore)
+const { vChartRef } = useChartDataFetch(props.chartConfig, useChartEditStore,(newData)=>{
+  props.chartConfig.option.dataset = newData
+  
+  // vChartRef.value?.setOption(props.chartConfig.option,false)
+})
 </script>

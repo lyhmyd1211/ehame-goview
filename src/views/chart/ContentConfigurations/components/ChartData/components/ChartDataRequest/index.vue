@@ -13,7 +13,7 @@
         <div class="go-pr-3">
           <n-space vertical>
             <request-global-config></request-global-config>
-            <request-target-config :target-data-request="targetData?.request"></request-target-config>
+            <request-target-config :target-data-request="targetData?.request||trueData.request"></request-target-config>
           </n-space>
         </div>
       </n-scrollbar>
@@ -38,7 +38,7 @@
 </template>
 
 <script script lang="ts" setup>
-import { ref, toRefs, PropType, watch } from 'vue'
+import { ref, toRefs, PropType, watch, computed } from 'vue'
 import { RequestContentTypeEnum } from '@/enums/httpEnum'
 import { useTargetData } from '../../../hooks/useTargetData.hook'
 import { RequestGlobalConfig } from './components/RequestGlobalConfig'
@@ -53,7 +53,19 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelShow', 'sendHandle'])
 
-const { targetData } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 const { dataSyncUpdate } = useSync()
 
 // 解构基础配置

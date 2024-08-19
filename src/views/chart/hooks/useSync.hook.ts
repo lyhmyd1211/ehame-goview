@@ -255,7 +255,7 @@ export const useSync = () => {
         if (res.data) {
           updateStoreInfo(res.data)
           // 更新全局数据
-          await updateComponent(JSONParse(res.data.content))
+          await res.data.content&&updateComponent(JSONParse(res.data.content))
           return
         }else {
           chartEditStore.setProjectInfo(ProjectInfoEnum.PROJECT_ID, fetchRouteParamsLocation())
@@ -302,10 +302,10 @@ export const useSync = () => {
         const uploadRes = await uploadFile(uploadParams)
         // 保存预览图
         if(uploadRes && uploadRes.code === ResultEnum.SUCCESS) {
-          if (uploadRes.data.fileurl) {
+          if (uploadRes.data.link) {
             await updateProjectApi({
               id: fetchRouteParamsLocation(),
-              indexImage: `${uploadRes.data.fileurl}`
+              indexImage: `${uploadRes.data.link}`
             })
           } else {
             await updateProjectApi({
@@ -330,6 +330,7 @@ export const useSync = () => {
       setTimeout(() => {
         chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.SUCCESS)
       }, 1000)
+      window['$message'].success('保存成功')
       return
     }
     // 失败状态

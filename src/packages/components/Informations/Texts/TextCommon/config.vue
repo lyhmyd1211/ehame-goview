@@ -42,6 +42,9 @@
       <setting-item name="水平对齐">
         <n-select v-model:value="optionData.textAlign" size="small" :options="textAlignOptions" />
       </setting-item>
+      <setting-item name="垂直对齐">
+        <n-select v-model:value="optionData.alignItems" size="small" :options="textItemOptions" />
+      </setting-item>
       <setting-item name="文本方向">
         <n-select v-model:value="optionData.writingMode" size="small" :options="verticalOptions" />
       </setting-item>
@@ -78,6 +81,27 @@
         <n-color-picker size="small" :modes="['hex']" v-model:value="optionData.backgroundColor"></n-color-picker>
       </setting-item>
     </setting-item-box>
+
+    <setting-item-box name="省略" >
+      <setting-item name="是否显示提示框" >
+        <n-switch v-model:value="optionData.tooltip" size="small"></n-switch>
+      </setting-item>
+      <setting-item name="省略方式">
+        <n-select v-model:value="optionData.ellipsis" size="small" :options="ellipsisOptions" />
+      </setting-item>
+      <setting-item name="是否显示滚动条" v-if="optionData.ellipsis===0">
+        <n-switch v-model:value="optionData.scroll" size="small"></n-switch>
+      </setting-item>
+      <setting-item name="超出行数多行省略" v-if="optionData.ellipsis===2">
+        <n-input-number
+          v-model:value="optionData.mEllipsisNum"
+          size="small"
+          :min="1"
+          :step="1"
+        ></n-input-number>
+      </setting-item>
+    </setting-item-box>
+
   </collapse-item>
 </template>
 
@@ -96,6 +120,11 @@ const textAlignOptions = [
   { label: '左对齐', value: 'start' },
   { label: '居中', value: 'center' },
   { label: '右对齐', value: 'end' }
+]
+const textItemOptions = [
+  { label: '上对齐', value: 'start' },
+  { label: '居中', value: 'center' },
+  { label: '下对齐', value: 'end' }
 ]
 
 const verticalOptions = [
@@ -118,6 +147,22 @@ const fontWeightOptions = [
     value: FontWeightObject[FontWeightEnum.BOLD]
   }
 ]
+
+const ellipsisOptions = [
+  {
+    label: '不省略',
+    value: 0
+  },
+  {
+    label: '单行省略',
+    value: 1
+  },
+  {
+    label: '多行省略',
+    value: 2
+  }
+]
+
 const handleLinkClick = () => {
   window.open(props.optionData.linkHead + props.optionData.link)
 }

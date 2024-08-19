@@ -34,7 +34,7 @@
         :componentData="element"
         :layer-mode="layerMode"
         :isGroup="true"
-        @mousedown="mousedownHandle($event, element, componentGroupData.id)"
+        @mousedown="mousedownHandle($event, element, element.id)"
         @mouseenter="mouseenterHandle(element)"
         @mouseleave="mouseleaveHandle(element)"
         @contextmenu="handleContextMenu($event, componentGroupData, optionsHandle)"

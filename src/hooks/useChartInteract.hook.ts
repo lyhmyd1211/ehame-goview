@@ -19,7 +19,6 @@ export const useChartInteract = (
   const fnOnEvent = interactEvents.filter(item => {
     return item.interactOn === interactEventOn
   })
-
   if (fnOnEvent.length === 0) return
   fnOnEvent.forEach(item => {
 
@@ -32,6 +31,7 @@ export const useChartInteract = (
       Object.keys(item.interactFn).forEach(key => {
         if (key in Params.value) {
           Params.value[key] = param[item.interactFn[key]]
+          Params.value['tId'] = new Date().getTime()+'' 
         }
         if (key in Header.value) {
           Header.value[key] = param[item.interactFn[key]]
@@ -45,6 +45,7 @@ export const useChartInteract = (
       Object.keys(item.interactFn).forEach(key => {
         if (key in Params.value) {
           Params.value[key] = param[item.interactFn[key]]
+          Params.value['tId'] = new Date().getTime()+'' 
         }
         if (key in Header.value) {
           Header.value[key] = param[item.interactFn[key]]

@@ -73,7 +73,19 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelShow', 'sendHandle'])
 const { PencilIcon } = icon.ionicons5
-const { chartEditStore, targetData } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 const { requestDataPond } = toRefs(chartEditStore.getRequestGlobalConfig)
 const requestShow = ref(false)
 const modelShowRef = ref(false)
@@ -83,7 +95,7 @@ const editData = ref<RequestDataPondItemType>()
 
 // 所选数据池
 const pondData = computed(() => {
-  const selectId = targetData?.value?.request?.requestDataPondId
+  const selectId = trueData?.value?.request?.requestDataPondId
   if (!selectId) return undefined
   const data = requestDataPond.value.filter(item => {
     return selectId === item.dataPondId
@@ -204,7 +216,7 @@ const deletePond = (targetData: RequestDataPondItemType) => {
 const closeAndSendHandle = () => {
   // 将所选内容赋值给对象
   if (pondData.value) {
-    targetData.value.request = {
+    trueData.value.request = {
       ...toRaw(pondData.value.dataPondRequestConfig),
       requestDataPondId: pondData.value.dataPondId
     }

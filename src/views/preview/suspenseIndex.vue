@@ -24,10 +24,11 @@
       </div>
     </template>
   </div>
+  <shadow-index :component-list="mComponentList" style="width: 0;height:0" v-if="mComponentList&&mComponentList.length>0"></shadow-index>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { PreviewRenderList } from './components/PreviewRenderList'
 import { getFilterStyle, setTitle } from '@/utils'
 import { getEditCanvasConfigStyle, getSessionStorageInfo, keyRecordHandle, dragCanvas } from './utils'
@@ -37,7 +38,7 @@ import { useStore } from './hooks/useStore.hook'
 import { PreviewScaleEnum } from '@/enums/styleEnum'
 import type { ChartEditStorageType } from './index.d'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
-
+import shadowIndex from '@/packages/components/Charts/Maps/MapAmapMask/suspenseIndex.vue'
 // const localStorageInfo: ChartEditStorageType = getSessionStorageInfo() as ChartEditStorageType
 
 await getSessionStorageInfo()
@@ -61,6 +62,13 @@ const showEntity = computed(() => {
 useStore(chartEditStore)
 const { entityRef, previewRef } = useScale(chartEditStore)
 const { show } = useComInstall(chartEditStore)
+
+const mComponentList = computed(()=>{
+  return chartEditStore1.getShadowList
+})
+
+const chartEditStore1 = useChartEditStore()
+
 
 // 开启键盘监听
 keyRecordHandle()

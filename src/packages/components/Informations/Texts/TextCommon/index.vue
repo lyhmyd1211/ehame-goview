@@ -1,8 +1,17 @@
 <template>
-  <div class="go-text-box">
-    <div class="content">
-      <span style="cursor: pointer; white-space: pre-wrap" v-if="link" @click="click">{{ option.dataset }}</span>
-      <span style="white-space: pre-wrap" v-else>{{ option.dataset }}</span>
+  <div class="go-text-box" :class="{scroll}">
+    <div class="content" :class="{isMultiEllipsis:chartConfig.option.ellipsis===2}" :style="{width:chartConfig.option.ellipsis?'100%':'auto'}">
+      <n-tooltip trigger="hover" v-if="chartConfig.option.tooltip" width="trigger">
+        <template #trigger>
+          <span style="cursor: pointer" class="text" :class="{isEllipsis:chartConfig.option.ellipsis===1}" v-if="link" @click="click">{{ option.dataset }}</span>
+          <span  v-else class="text" :class="{isEllipsis:chartConfig.option.ellipsis===1}">{{ option.dataset }}</span>
+        </template>
+        {{ option.dataset }}
+      </n-tooltip>
+      <template v-else>
+        <span style="cursor: pointer" class="text" :class="{isEllipsis:chartConfig.option.ellipsis===1}" v-if="link" @click="click">{{ option.dataset }}</span>
+        <pre  v-else class="text" :class="{isEllipsis:chartConfig.option.ellipsis===1}" >{{option.dataset}}</pre>
+      </template>
     </div>
   </div>
 </template>
@@ -30,12 +39,15 @@ const {
   paddingY,
   paddingX,
   textAlign,
+  alignItems,
   borderWidth,
   borderColor,
   borderRadius,
   writingMode,
   backgroundColor,
-  fontWeight
+  fontWeight,
+  mEllipsisNum,
+  scroll
 } = toRefs(props.chartConfig.option)
 
 const option = shallowReactive({
@@ -68,7 +80,7 @@ const click = () => {
 <style lang="scss" scoped>
 @include go('text-box') {
   display: flex;
-  align-items: center;
+  align-items: v-bind('alignItems||"center"');
   justify-content: v-bind('textAlign');
   overflow: hidden;
 
@@ -83,8 +95,33 @@ const click = () => {
     border-width: v-bind('borderWidth + "px"');
     border-radius: v-bind('borderRadius + "px"');
     border-color: v-bind('borderColor');
-
     background-color: v-bind('backgroundColor');
+   
+  }
+  .isEllipsis{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    width: 100%;
+  }
+  .isMultiEllipsis{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: v-bind('mEllipsisNum');
+    padding-bottom: 0;
+  }
+  &.scroll{
+    overflow: auto;
+  }
+  :deep(n-popover__content){
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre{
+    font-family: auto;
+    text-wrap: wrap;
   }
 }
 </style>

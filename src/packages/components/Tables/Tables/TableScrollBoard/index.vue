@@ -22,12 +22,14 @@
     <div
       v-if="status.mergedConfig"
       class="rows"
+      id='scroll-container'
       :style="`height: ${h - (status.header.length ? status.mergedConfig.headerHeight : 0)}px;`"
     >
       <div
         class="row-item"
         v-for="(row, ri) in status.rows"
         :key="`${row.toString()}${row.scroll}`"
+        @click.stop="rowClick(row)"
         :style="`
         height: ${status.heights[ri]}px;
         line-height: ${status.heights[ri]}px;
@@ -50,10 +52,13 @@
 <script setup lang="ts">
 import { PropType, onUnmounted, reactive, toRefs, watch, onMounted } from 'vue'
 import { CreateComponentType } from '@/packages/index.d'
-import { useChartDataFetch } from '@/hooks'
+import { useChartDataFetch, useChartInteract } from '@/hooks'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import merge from 'lodash/merge'
 import cloneDeep from 'lodash/cloneDeep'
+import { ModalListType } from '@/store/modules/chartEditStore/chartEditStore'
+import { ComponentInteractParamsEnum } from './interact'
+import { InteractEventOn } from '@/enums/eventEnum'
 
 const props = defineProps({
   chartConfig: {
@@ -163,6 +168,7 @@ const status = reactive({
   rowsData: [],
   rows: [
     {
+      originData:[],
       ceils: [],
       rowIndex: 0,
       scroll: 0
@@ -211,21 +217,22 @@ const calcRowsData = () => {
   let { dataset, index, headerBGC, rowNum } = status.mergedConfig
   if (index) {
     dataset = dataset.map((row: any, i: number) => {
-      row = [...row]
+      let rows = [...row.ceils]
       const indexTag = `<span class="index" style="background-color: ${headerBGC};border-radius: 3px;padding: 0px 3px;">${
         i + 1
       }</span>`
-      row.unshift(indexTag)
-      return row
+      rows.unshift(indexTag)
+      return rows
     })
   }
-  dataset = dataset.map((ceils: any, i: number) => ({ ceils, rowIndex: i }))
+  dataset = dataset.map((data: any, i: number) => ({ ...data, rowIndex: i }))
   const rowLength = dataset.length
   if (rowLength > rowNum && rowLength < 2 * rowNum) {
     dataset = [...dataset, ...dataset]
   }
   dataset = dataset.map((d: any, i: number) => ({ ...d, scroll: i }))
-
+  
+  console.log('rowLength',dataset);
   status.rowsData = dataset
   status.rows = dataset
 }
@@ -236,7 +243,7 @@ const calcWidths = () => {
   const usedWidth = columnWidth.reduce((all: any, ws: number) => all + ws, 0)
   let columnNum = 0
   if (rowsData[0]) {
-    columnNum = (rowsData[0] as any).ceils.length
+    columnNum = (rowsData[0] as any).ceils?.length
   } else if (header.length) {
     columnNum = header.length
   }
@@ -268,41 +275,51 @@ const calcAligns = () => {
 }
 
 const animation = async (start = false) => {
-  const { needCalc } = status
+  const { needCalc } = status;
 
-  if (needCalc) {
-    calcRowsData()
-    calcHeights()
-    status.needCalc = false
-  }
-  let { avgHeight, animationIndex, mergedConfig, rowsData, updater } = status
-  const { waitTime, carousel, rowNum } = mergedConfig
+if (needCalc) {
+  calcRowsData();
+  calcHeights();
+  status.needCalc = false;
+}
 
-  const rowLength = rowsData.length
-  if (rowNum >= rowLength) return
-  if (start) {
-    await new Promise(resolve => setTimeout(resolve, waitTime * 1000))
-    if (updater !== status.updater) return
-  }
-  const animationNum = carousel === 'single' ? 1 : rowNum
-  let rows = rowsData.slice(animationIndex)
-  rows.push(...rowsData.slice(0, animationIndex))
-  status.rows = rows.slice(0, carousel === 'page' ? rowNum * 2 : rowNum + 1)
-  status.heights = new Array(rowLength).fill(avgHeight)
-  await new Promise(resolve => setTimeout(resolve, 300))
-  if (updater !== status.updater) return
-  status.heights.splice(0, animationNum, ...new Array(animationNum).fill(0))
-  animationIndex += animationNum
-  const back = animationIndex - rowLength
-  if (back >= 0) animationIndex = back
-  status.animationIndex = animationIndex
-  status.animationHandler = setTimeout(animation, waitTime * 1000 - 300) as any
+let { avgHeight, animationIndex, mergedConfig, rowsData, updater } = status;
+
+const rowLength = rowsData.length;
+if (mergedConfig.rowNum >= rowLength) return;
+
+const scrollContainer = document.getElementById('scroll-container'); 
+const scrollToPosition = (index:number) => {
+  const position = index * avgHeight;
+  scrollContainer?.scrollTo({ top: position, behavior: 'smooth' });
+};
+
+const scroll = () => {
+  if (updater !== status.updater) return;
+
+  // 不限制显示的行数
+  status.rows = rowsData;
+  status.heights = new Array(rowLength).fill(avgHeight);
+
+  // 每次滚动5行
+  animationIndex += mergedConfig.rowNum; 
+  if (animationIndex >= rowLength) animationIndex = 0; // 循环回到开头
+
+  status.animationIndex = animationIndex;
+  scrollToPosition(animationIndex);
+};
+
+const startScroll = () => {
+  status.animationHandler = setInterval(scroll, mergedConfig.waitTime * 1000) as any;
+};
+
+startScroll();
 }
 
 const stopAnimation = () => {
   status.updater = (status.updater + 1) % 999999
   if (!status.animationHandler) return
-  clearTimeout(status.animationHandler)
+  clearInterval(status.animationHandler)
 }
 
 const onRestart = async () => {
@@ -313,6 +330,34 @@ const onRestart = async () => {
   } catch (error) {
     console.log(error)
   }
+}
+
+const clickEvent = (data:string)=>{
+  console.log('内容',data);
+  useChartInteract(
+    // 固定参数
+    props.chartConfig,
+    // 固定参数
+    useChartEditStore,
+    // 定义的类型和对应的值
+    { [ComponentInteractParamsEnum.DATA]: data },
+    // 事件类型
+    InteractEventOn.CLICK
+  )
+}
+const chartEditStore = useChartEditStore()
+const rowClick = (row:any)=>{
+  if (props.chartConfig.option.modalId) {
+    let data:ModalListType  = {
+    modalId:props.chartConfig.option.modalId,
+    isShow:true,
+    postData:row
+    } 
+    chartEditStore.setModalList(data)
+  }
+  
+  clickEvent(row.originData.id)
+
 }
 
 watch(
@@ -375,7 +420,7 @@ onUnmounted(() => {
   }
 
   .rows {
-    overflow: hidden;
+    overflow: auto;
 
     .row-item {
       display: flex;

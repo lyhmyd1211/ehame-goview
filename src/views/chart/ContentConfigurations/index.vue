@@ -101,8 +101,14 @@ const selectTarget = computed(() => {
   const selectId = chartEditStore.getTargetChart.selectId
   // 排除多个
   if (selectId.length !== 1) return undefined
-  const target = chartEditStore.componentList[chartEditStore.fetchTargetIndex()]
+  let target:any = chartEditStore.componentList[chartEditStore.fetchTargetIndex()]
   if (target?.isGroup) {
+    if (selectId[0]!==target.id) {
+      let contentSelect = target.groupList?.filter(i=>i.id===selectId[0])||[]
+      if (contentSelect.length>0) {
+        target = contentSelect[0]
+      }
+    }
     // eslint-disable-next-line vue/no-side-effects-in-computed-properties
     tabsSelect.value = TabsEnum.CHART_SETTING
   }

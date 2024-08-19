@@ -50,7 +50,10 @@ export const option = {
   // 指标颜色
   indicatorTextColor: '#FFFFFFFF',
   // 偏移角度
-  offsetDegree: 0
+  offsetDegree: 0,
+  gapDegree:75,
+  gapOffsetDegree:0
+
 }
 
 export default class Config extends PublicConfigClass implements CreateComponentType {

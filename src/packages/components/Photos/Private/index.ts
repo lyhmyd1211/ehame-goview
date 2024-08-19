@@ -6,6 +6,8 @@ import { StorageEnum } from '@/enums/storageEnum'
 import { FileTypeEnum } from '@/enums/fileTypeEnum'
 import { backgroundImageSize } from '@/settings/designSetting'
 import { usePackagesStore } from '@/store/modules/packagesStore/packagesStore'
+import { uploadFile } from '@/api/path/project.api'
+import { ResultEnum } from '@/enums/httpEnum'
 
 const StoreKey = StorageEnum.GO_USER_MEDIA_PHOTOS
 
@@ -15,11 +17,12 @@ const StoreKey = StorageEnum.GO_USER_MEDIA_PHOTOS
 type UploadCompletedEventType = {
   fileName: string
   url: string
+  eventObj?:any
 }
 
 const userPhotosList: ConfigType[] = getLocalStorage(StoreKey) || []
 
-const uploadFile = (callback: Function | null = null) => {
+const upload = (callback: ((arg0: UploadCompletedEventType)=>void) | null = null) => {
   const input = document.createElement('input')
   input.type = 'file'
   input.accept = '.png,.jpg,.jpeg,.gif' // 这里只允许部分图片类型
@@ -35,12 +38,29 @@ const uploadFile = (callback: Function | null = null) => {
       window['$message'].warning('文件格式不符合，请重新上传！')
       return false
     }
-    const reader = new FileReader()
-    reader.onload = () => {
-      const eventObj: UploadCompletedEventType = { fileName: name, url: reader.result as string }
-      callback && callback(eventObj)
+    if (file) {
+      console.log('上传可以',file);
+      const newNameFile = new File([file], `${name}`, {
+        type: type
+      })
+      let uploadParams = new FormData()
+      uploadParams.append('object', newNameFile)
+      const uploadRes = await uploadFile(uploadParams)
+      if (uploadRes && uploadRes.code === ResultEnum.SUCCESS) {
+        if (uploadRes.data.link) {
+          const reader = new FileReader()
+          reader.onload = () => {
+            const eventObj: UploadCompletedEventType = { fileName: name, url: reader.result as string }
+            callback && callback({fileName:name.split('.')[0],url:uploadRes.data.link,eventObj})
+          }
+          reader.readAsDataURL(file)
+        } 
+        return
+      }
+      window['$message'].error('添加图片失败，请稍后重试！')
+    }else{
+      window['$message'].error('添加图片失败，请稍后重试！')
     }
-    reader.readAsDataURL(file)
   }
   input.click()
 }
@@ -50,7 +70,7 @@ const addConfig = {
   category: ChatCategoryEnum.PRIVATE,
   categoryName: ChatCategoryEnumName.PRIVATE,
   package: PackagesCategoryEnum.PHOTOS,
-  chartFrame: ChartFrameEnum.STATIC,
+  chartFrame: ChartFrameEnum.COMMON,
   title: '点击上传图片',
   image: 'upload.png',
   redirectComponent: `${ImageConfig.package}/${ImageConfig.category}/${ImageConfig.key}`, // 跳转组件路径规则：packageName/categoryName/componentKey
@@ -58,11 +78,7 @@ const addConfig = {
   configEvents: {
     // 点击上传事件
     addHandle: (photoConfig: ConfigType) => {
-      goDialog({
-        message: `图片需小于 ${backgroundImageSize}M 且只暂存在浏览器中。当前图片暂存上限5M，超过不再缓存新图片，请自行对接后端接口！现编译成 base64 进行渲染，对接后端后请使用【URL地址】进行交互！`,
-        transformOrigin: 'center',
-        onPositiveCallback: () => {
-          uploadFile((e: UploadCompletedEventType) => {
+      upload((e: UploadCompletedEventType) => {
             // 和上传组件一样配置，更换标题，图片，预设数据
             const packagesStore = usePackagesStore()
             const newPhoto = {
@@ -70,9 +86,9 @@ const addConfig = {
               category: ChatCategoryEnum.PRIVATE,
               categoryName: ChatCategoryEnumName.PRIVATE,
               package: PackagesCategoryEnum.PHOTOS,
-              chartFrame: ChartFrameEnum.STATIC,
+              chartFrame: ChartFrameEnum.COMMON,
               title: e.fileName,
-              image: e.url,
+              image: e.eventObj.url,
               dataset: e.url,
               redirectComponent: `${ImageConfig.package}/${ImageConfig.category}/${ImageConfig.key}` // 跳转组件路径规则：packageName/categoryName/componentKey
             }
@@ -82,8 +98,6 @@ const addConfig = {
             // 插入到上传按钮前的位置
             packagesStore.addPhotos(newPhoto, 1)
           })
-        }
-      })
     }
   }
 }

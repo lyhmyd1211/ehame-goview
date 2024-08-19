@@ -98,12 +98,14 @@ import {
   FitToScreen as FitToScreenIcon,
   FitToHeight as FitToHeightIcon,
   FitToWidth as FitToWidthIcon,
+  CenterToFit as CenterToFitIcon,
   Save as SaveIcon,
   Carbon3DCursor as Carbon3DCursorIcon,
   Carbon3DSoftware as Carbon3DSoftwareIcon,
   Filter as FilterIcon,
   FilterEdit as FilterEditIcon,
-  Laptop as LaptopIcon
+  Laptop as LaptopIcon,
+  ChartCustom as ChartCustomIcon
 } from '@vicons/carbon'
 
 const ionicons5 = {
@@ -293,6 +295,7 @@ const carbon = {
   FitToScreenIcon,
   FitToHeightIcon,
   FitToWidthIcon,
+  
   // 保存
   SaveIcon,
   // 成组
@@ -303,7 +306,11 @@ const carbon = {
   FilterIcon,
   FilterEditIcon,
   // 图层
-  LaptopIcon
+  LaptopIcon,
+
+  //自定义
+  CenterToFitIcon,
+  ChartCustomIcon,
 }
 
 // https://www.xicons.org/#/ 还有很多

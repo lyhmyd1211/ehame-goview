@@ -72,12 +72,24 @@ const emit = defineEmits(['createPond', 'deletePond'])
 
 const { DuplicateOutlineIcon, TrashIcon } = icon.ionicons5
 const designStore = useDesignStore()
-const { chartEditStore, targetData } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 const { requestDataPond } = toRefs(chartEditStore.getRequestGlobalConfig)
 
 // 选中的全局数据
 const selectPondId = computed(() => {
-  return targetData.value.request.requestDataPondId
+  return trueData.value.request.requestDataPondId
 })
 
 // 颜色
@@ -99,7 +111,7 @@ const deletePond = (target: Event, targetData: RequestDataPondItemType) => {
 
 // 选中
 const clickHandle = (item: RequestDataPondItemType) => {
-  targetData.value.request.requestDataPondId = item.dataPondId
+  trueData.value.request.requestDataPondId = item.dataPondId
 }
 </script>
 

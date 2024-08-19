@@ -10,9 +10,28 @@ export const option = {
   [COMPONENT_INTERACT_EVENT_KET]: ComponentInteractEventEnum.DATA,
   // 默认值
   defaultExpandedKeys: ['0'],
+  load: [{
+    key:'',
+    url:'',
+    loadProps:{
+      label:'label',
+      value:'value',
+      children:'children',
+      isLeaf:'isLeaf'
+    },
+    addAll:false,
+    childExtendParent:false
+  }],
+  level:'0',
+  levelStyleArr:[{
+    fontColor:'#fff',
+    fontSize:16
+  }],
   // 暴露配置内容给用户
   dataset: [ ...dataJson.source] 
 }
+
+
 
 export default class Config extends PublicConfigClass implements CreateComponentType {
   public key = InputsTreeConfig.key

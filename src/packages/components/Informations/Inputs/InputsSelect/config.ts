@@ -25,7 +25,16 @@ export const option = {
       label: '选项3',
       value: '3'
     }
-  ]
+  ],
+  bgColor:'#ffffff00',
+  fontColor:'#000',
+  borderColor:'#e0e0e6',
+  borderActiveColor:'#51d6a9',
+  customBg:false,
+  bg1:'',
+  bg2:'',
+  bg3:'',
+  filterable:false,
 }
 
 export default class Config extends PublicConfigClass implements CreateComponentType {

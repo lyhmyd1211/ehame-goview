@@ -6,4 +6,6 @@
 
 <script setup lang="ts">
 import suspenseIndex from './suspenseIndex.vue'
+
+
 </script>

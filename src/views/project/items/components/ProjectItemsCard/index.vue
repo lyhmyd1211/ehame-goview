@@ -14,6 +14,7 @@
         <!-- 中间 -->
         <div class="list-content-img" @click="resizeHandle">
           <n-image
+            v-if="cardData.image"
             object-fit="contain"
             height="180"
             preview-disabled

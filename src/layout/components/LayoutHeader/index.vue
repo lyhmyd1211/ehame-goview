@@ -12,9 +12,10 @@
       <div class="header-item right">
         <n-space>
           <slot name="ri-left"> </slot>
-          <go-lang-select></go-lang-select>
+          <!-- <go-lang-select></go-lang-select>
           <theme-color-select></theme-color-select>
-          <go-theme-select></go-theme-select>
+          <go-theme-select></go-theme-select> -->
+          <project-layout-create :collapsed="false"></project-layout-create>
           <slot name="ri-right"> </slot>
         </n-space>
       </div>
@@ -29,7 +30,7 @@ import { GoThemeSelect } from '@/components/GoThemeSelect'
 import { GoLangSelect } from '@/components/GoLangSelect'
 import { ThemeColorSelect } from '@/components/Pages/ThemeColorSelect'
 import { PageEnum } from '@/enums/pageEnum'
-
+import { ProjectLayoutCreate } from '@/views/project/layout/components/ProjectLayoutCreate/index'
 const route = useRoute()
 
 const isProject = computed(() => {

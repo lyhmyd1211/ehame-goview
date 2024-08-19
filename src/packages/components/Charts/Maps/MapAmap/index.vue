@@ -43,10 +43,13 @@ let AMapIns: any = null
 const vChartRef = ref<HTMLElement>()
 
 const initMap = (newData: any) => {
+  window._AMapSecurityConfig = {
+        securityJsCode: "d67dd1015daccb740b722a93f8700614",
+      };
   // 初始化
   AMapLoader.load({
     key: amapKey.value, //api服务key--另外需要在public中使用安全密钥！！！
-    version: '1.4.15', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+    version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
     plugins: ['AMap.PlaceSearch', 'AMap.AutoComplete'] // 需要使用的的插件列表
   })
     .then(AMap => {

@@ -7,7 +7,9 @@ import {
   RequestContentTypeEnum,
   RequestParamsObjType
 } from '@/enums/httpEnum'
+// import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import type { RequestGlobalConfigType, RequestConfigType } from '@/store/modules/chartEditStore/chartEditStore.d'
+import { getAdministrativeLevel, getUpperLevelCode } from '@/utils'
 
 export const get = <T = any>(url: string, params?: object) => {
   return axiosInstance<T>({
@@ -112,7 +114,7 @@ export const translateStr = (target: string | Record<any, any>) => {
  * @param targetParams 当前组件参数
  * @param globalParams 全局参数
  */
-export const customizeHttp = (targetParams: RequestConfigType, globalParams: RequestGlobalConfigType) => {
+export const customizeHttp = (targetParams: RequestConfigType, globalParams: RequestGlobalConfigType,isDownload=false) => {
   if (!targetParams || !globalParams) {
     return
   }
@@ -210,15 +212,124 @@ export const customizeHttp = (targetParams: RequestConfigType, globalParams: Req
     data = requestSQLContent
   }
 
-  try {
-    const url =  (new Function("return `" + `${requestOriginUrl}${requestUrl}`.trim() + "`"))();
-    return axiosInstance({
-        url,
-        method: requestHttpType,
-        data,
-        params,
-        headers
+ /**把参数拼接到url上 */
+  const filterUrlParam = (url:string,p:Object)=>{
+    if ('isUrlParam' in p) {
+      let u =  url+p['isUrlParam']
+      delete p['isUrlParam']
+      return u
+    }
+    return url
+  }
+
+
+  /**过滤空格和空参数 */
+  const filterBlank = (param)=>{
+    Object.keys(param).map(item=>{
+      if (param[item]===' '||param[item]==='') {
+        delete param[item]
+      }
     })
+  }
+
+
+  /**解决地图层级请求问题 */
+  const toolUpperAreaCode = (param)=>{
+    let rule =  '-shadow-upper-level-'
+    Object.keys(param).map(item=>{
+      if (param[item]&&item.indexOf(rule)>-1) {
+        let [changeItem,level] = item.split(rule)
+        let upperCode = getUpperLevelCode(param[item])
+        let inputLevel = getAdministrativeLevel(param[item])
+        if (upperCode&&inputLevel>parseInt(level)) {
+          param[changeItem] = getUpperLevelCode(param[item])
+        }else{
+          param[changeItem] = param[item]
+        }
+        delete param[item]
+      }
+    })
+   
+  }
+
+  
+  
+  /**连接两个请求共享参数 */
+  
+  const connect = async(param:any,callback:any)=>{
+    let conP = ''
+    let conId = ''
+    let cur = ''
+    Object.keys(param).map(item=>{
+      let s = item.split('-connect-')
+      if (s.length>1) {
+        [conP,conId] = s
+        cur = item
+      }
+    })
+    if (conP&&conId&&!param[conP]) {
+      const d = await import('@/store/modules/chartEditStore/chartEditStore')
+      
+        const chartEditStore =  d.useChartEditStore()
+        let c = chartEditStore.getComponentList.filter((i:any)=>i.id===conId)
+        if (c.length>0) {
+          param[conP] = c[0].request.requestParams.Params[conP]
+          delete param[cur]
+        }
+        return callback()
+      
+    }else{
+      return callback&&callback()
+    }
+  }
+
+  const getPre = ()=>{
+    // 获取协议
+    let protocol = window.location.protocol;
+    
+    // 获取主机名
+    let hostname = window.location.hostname;
+    
+    // 获取端口号（如果有的话）
+    let port = window.location.port ? ':' + window.location.port : '';
+    
+    // 组合前缀
+    let urlPrefix = protocol + '//' + hostname + port;
+    return urlPrefix
+  }
+
+  try {
+    let url =  ''
+    if (requestOriginUrl&&requestOriginUrl?.indexOf('http://')>-1) {
+      url =  (new Function("return `" + `${requestOriginUrl}${requestUrl}`.trim() + "`"))();
+    }else{
+      url =  (new Function("return `" + `${getPre()}${requestOriginUrl}${requestUrl}`.trim() + "`"))();
+    }
+    
+    filterBlank(params)
+    toolUpperAreaCode(params)
+    return connect(params,()=>{
+      if (isDownload) {
+        return axiosInstance({
+          url:filterUrlParam(url,params),
+          method: requestHttpType,
+          data,
+          params:params,
+          headers,
+          responseType:'blob'
+        })
+      }else{
+        return axiosInstance({
+          url:filterUrlParam(url,params),
+          method: requestHttpType,
+          data,
+          params:params,
+          headers,
+        })
+      }
+     
+    })
+   
   } catch (error) {
     console.log(error)
     window['$message'].error('URL地址格式有误！')

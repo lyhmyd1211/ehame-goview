@@ -350,3 +350,170 @@ export const addWindowUnload = () => {
     window.onbeforeunload = null
   }
 }
+
+/**
+ * 获取geojson西南角和东北角坐标
+ * @param geojson 
+ * @returns 
+ */
+export const  getBoundingBox =(geojson:any) => {
+  if (typeof geojson ==='string') {
+    geojson = JSONParse(geojson)
+  }
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  function traverse(geometry:any) {
+      if (geometry.type === 'Point') {
+          const [lon, lat] = geometry.coordinates;
+          minX = Math.min(minX, lon);
+          minY = Math.min(minY, lat);
+          maxX = Math.max(maxX, lon);
+          maxY = Math.max(maxY, lat);
+      } else if (geometry.type === 'MultiPoint') {
+          geometry.coordinates.forEach(([lon, lat]) => {
+              minX = Math.min(minX, lon);
+              minY = Math.min(minY, lat);
+              maxX = Math.max(maxX, lon);
+              maxY = Math.max(maxY, lat);
+          });
+      } else if (geometry.type === 'LineString' || geometry.type === 'MultiLineString') {
+          geometry.coordinates.forEach(segment => {
+              segment.forEach(([lon, lat]) => {
+                  minX = Math.min(minX, lon);
+                  minY = Math.min(minY, lat);
+                  maxX = Math.max(maxX, lon);
+                  maxY = Math.max(maxY, lat);
+              });
+          });
+      } else if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
+          geometry.coordinates.forEach(polygon => {
+              polygon.forEach(ring => {
+                  ring.forEach(([lon, lat]) => {
+                      minX = Math.min(minX, lon);
+                      minY = Math.min(minY, lat);
+                      maxX = Math.max(maxX, lon);
+                      maxY = Math.max(maxY, lat);
+                  });
+              });
+          });
+      } else if (geometry.type === 'GeometryCollection') {
+          geometry.geometries.forEach(subGeometry => traverse(subGeometry));
+      } else {
+          throw new Error(`Unsupported GeoJSON geometry type: ${geometry.type}`);
+      }
+  }
+
+  if (geojson.type === 'Feature') {
+      traverse(geojson.geometry);
+  } else if (geojson.type === 'FeatureCollection') {
+      geojson.features.forEach(feature => traverse(feature.geometry));
+  } else if (geojson.type === 'Geometry') {
+      traverse(geojson);
+  } else {
+      throw new Error(`Unsupported GeoJSON type: ${geojson.type}`);
+  }
+
+  return {
+      southWest: [minX,minY], // 左下角经纬度
+      northEast: [maxX,maxY]  // 右上角经纬度
+  };
+}
+
+/**根据行政区划判断省市区 */
+export const  getAdministrativeLevel = (code:string|number)=> {
+  if (typeof code ==='number') {
+    code = code+''
+  }
+  if (/^\d{2}0{4}$/.test(code)) {
+    return 1;
+  } else if (/^\d{4}0{2}$/.test(code)) {
+    return 2;
+  } else if (/^\d{6}$/.test(code)) {
+    return 3;
+  }
+  return 1;
+}
+
+/**根据行政区划获取上一级 */
+export const getUpperLevelCode = (code:string|number)=> {
+  if (!code) return null;  // 确保代码长度为6位
+  if(typeof code ==='number') code = code+''
+  if(code.length !== 6) return null;
+  const provinceLevelCodes = ["11", "12", "31", "50"]; // 直辖市代码
+  
+  if (provinceLevelCodes.includes(code.slice(0, 2))) {
+      return code.slice(0, 2) + "0000";  // 直辖市返回前2位加4个零
+  } else if (code.slice(2, 6) === "0000") {
+      return code;  // 省级代码，已经是最高级
+  } else if (code.slice(4, 6) === "00") {
+      return code.slice(0, 2) + "0000";  // 地级返回前2位加4个零
+  } else {
+      return code.slice(0, 4) + "00";  // 县级返回前4位加2个零
+  }
+}
+
+/**获取指定层级的树数据 */
+export const  getTreeAtLevel =(tree:any[], level:number, currentLevel:number=1)=> {
+  const result:any[] = [];
+  // 递归函数，检查当前节点是否在指定层级，并处理子节点
+  function processNode(node:any, level:any, currentLevel:any) {
+    for (let index = 0; index < node.length; index++) {
+      const element = node[index];
+      if (level === currentLevel) {
+        result.push(element);
+      }
+      if (element.children && element.children.length > 0) {
+        processNode(element.children, level, currentLevel + 1)
+      }
+    }
+  }
+  
+  // 从根节点开始处理
+  processNode(tree, level, currentLevel);
+  
+  return result;
+}
+
+/**
+ * 补0
+ * @param num 
+ * @returns 
+ */
+export function padNum(num:number) {
+  return num < 10 ? '0' + num : num;
+}
+/**
+ * 获取近期时间
+ * @param day 近几天
+ * @param contain 是否包含当天
+ * @returns 
+ */
+export const getResentDay = (day:number,contain:boolean=false)=>{
+  
+  const currentDate = new Date(); // 获取当前日期
+  const Days = Array.from({ length: day }, (_, i) => {
+  const date = new Date(currentDate.getTime() - ((contain?i:i+1) * 24 * 60 * 60 * 1000));
+  return `${date.getFullYear()}-${padNum(date.getMonth()+1)}-${padNum(date.getDate())}`;
+  });
+  return Days
+}
+/**
+ * 获取dom缩放值
+ * @param element 
+ * @returns 
+ */
+export const  getScaleValues = (element:Element)=> {
+  const style = window.getComputedStyle(element);
+  const transformMatrix = style.transform;
+  const matrixMatch = transformMatrix.match(/matrix\((.*)\)/);
+  if (matrixMatch) {
+    const scaleComponents = matrixMatch[1].split(',');
+    const scaleX = parseFloat(scaleComponents[0]);
+    const scaleY = parseFloat(scaleComponents[3]);
+    return { scaleX, scaleY };
+  }
+  return { scaleX: 1, scaleY: 1 };
+}

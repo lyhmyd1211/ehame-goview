@@ -23,6 +23,27 @@
       </setting-item>
     </setting-item-box>
   </collapse-item>
+  <collapse-item name="按钮">
+    <template #header>
+      <n-switch  v-model:value="optionData.isFnBtn">
+      </n-switch>
+      <n-text>是否功能按钮</n-text>
+    </template>
+    <n-text>(需要dataset格式为{dataset:dataset,apiParam:''})</n-text>
+    <setting-item-box name="API地址" alone>
+      <n-input v-model:value="optionData.apiUrl"></n-input>
+    </setting-item-box>
+  </collapse-item>
+  <collapse-item name="提示框" v-if="optionData.isFnBtn">
+    <template #header>
+      <n-switch  v-model:value="optionData.isTooltip">
+      </n-switch>
+      <n-text>是否显示提示框</n-text>
+    </template>
+    <setting-item-box name="提示框显示内容" alone>
+      <n-input v-model:value="optionData.tooltipName"></n-input>
+    </setting-item-box>
+  </collapse-item>
 </template>
 
 <script setup lang="ts">

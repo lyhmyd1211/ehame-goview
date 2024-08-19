@@ -90,7 +90,19 @@ import { useTargetData } from '../../../hooks/useTargetData.hook'
 import isObject from 'lodash/isObject'
 import { toString, isArray } from '@/utils'
 
-const { targetData } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 const props = defineProps({
   show: {
     type: Boolean,
@@ -113,16 +125,16 @@ const dimensions = ref()
 const dimensionsAndSource = ref()
 const noData = ref(false)
 
-const { uploadFileListRef, customRequest, beforeUpload, download } = useFile(targetData)
+const { uploadFileListRef, customRequest, beforeUpload, download } = useFile(trueData)
 
 // 是否展示过滤器
 const filterShow = computed(() => {
-  return targetData.value.request.requestDataType !== RequestDataTypeEnum.STATIC
+  return trueData.value.request.requestDataType !== RequestDataTypeEnum.STATIC
 })
 
 // 是支持 dataset 的图表类型
 const isCharts = computed(() => {
-  return targetData.value.chartConfig.chartFrame === ChartFrameEnum.ECHARTS
+  return trueData.value.chartConfig.chartFrame === ChartFrameEnum.ECHARTS
 })
 
 // 处理映射列表状态结果
@@ -163,14 +175,14 @@ const dimensionsAndSourceHandle = () => {
 }
 
 watch(
-  () => targetData.value?.option?.dataset,
+  () => trueData.value?.option?.dataset,
   (
     newData?: {
       source: any
       dimensions: any
     } | null
   ) => {
-    if (newData && targetData?.value?.chartConfig?.chartFrame === ChartFrameEnum.ECHARTS) {
+    if (newData && trueData?.value?.chartConfig?.chartFrame === ChartFrameEnum.ECHARTS) {
       // 只有 DataSet 数据才有对应的格式
       source.value = newData
       if (isCharts.value) {

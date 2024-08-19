@@ -39,7 +39,7 @@ const option = {
     {
       type: 'pie',
       radius: ['40%', '65%'],
-      center: ['50%', '60%'],
+      center: ['50%', '55%'],
       roseType: false,
       avoidLabelOverlap: false,
       itemStyle: {
@@ -57,7 +57,7 @@ const option = {
       emphasis: {
         label: {
           show: true,
-          fontSize: '40',
+          fontSize: '20',
           fontWeight: 'bold'
         }
       },

@@ -4,17 +4,17 @@
       <setting-item-box name="请求配置">
         <setting-item name="类型">
           <n-tag :bordered="false" type="primary" style="border-radius: 5px">
-            {{ targetData.request.requestContentType === RequestContentTypeEnum.DEFAULT ? '普通请求' : 'SQL请求' }}
+            {{ trueData.request.requestContentType === RequestContentTypeEnum.DEFAULT ? '普通请求' : 'SQL请求' }}
           </n-tag>
         </setting-item>
 
         <setting-item name="方式">
-          <n-input size="small" :placeholder="targetData.request.requestHttpType || '暂无'" :disabled="true"></n-input>
+          <n-input size="small" :placeholder="trueData.request.requestHttpType || '暂无'" :disabled="true"></n-input>
         </setting-item>
 
         <setting-item name="组件间隔">
-          <n-input size="small" :placeholder="`${targetData.request.requestInterval || '暂无'}`" :disabled="true">
-            <template #suffix> {{ SelectHttpTimeNameObj[targetData.request.requestIntervalUnit] }} </template>
+          <n-input size="small" :placeholder="`${trueData.request.requestInterval || '暂无'}`" :disabled="true">
+            <template #suffix> {{ SelectHttpTimeNameObj[trueData.request.requestIntervalUnit] }} </template>
           </n-input>
         </setting-item>
 
@@ -34,7 +34,7 @@
       </setting-item-box>
 
       <setting-item-box name="组件地址" :alone="true">
-        <n-input size="small" :placeholder="targetData.request.requestUrl || '暂无'" :disabled="true">
+        <n-input size="small" :placeholder="trueData.request.requestUrl || '暂无'" :disabled="true">
           <template #prefix>
             <n-icon :component="FlashIcon" />
           </template>
@@ -79,7 +79,7 @@
     <!-- 请求配置model -->
     <chart-data-request
       v-model:modelShow="requestShow"
-      :targetData="targetData"
+      :targetData="trueData"
       @sendHandle="sendHandle"
     ></chart-data-request>
   </div>
@@ -100,7 +100,19 @@ import { useTargetData } from '../../../hooks/useTargetData.hook'
 import { newFunctionHandle } from '@/utils'
 
 const { HelpOutlineIcon, FlashIcon, PulseIcon } = icon.ionicons5
-const { targetData, chartEditStore } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 
 const {
   requestOriginUrl,
@@ -124,19 +136,19 @@ const requestModelHandle = () => {
 
 // 发送请求
 const sendHandle = async () => {
-  if (!targetData.value?.request) return
+  if (!trueData.value?.request) return
   loading.value = true
   try {
-    const res = await customizeHttp(toRaw(targetData.value.request), toRaw(chartEditStore.getRequestGlobalConfig))
+    const res = await customizeHttp(toRaw(trueData.value.request), toRaw(chartEditStore.getRequestGlobalConfig))
     loading.value = false
     if (res) {
       const { data } = res
-      if (!data && !targetData.value.filter) {
+      if (!data && !trueData.value.filter) {
         window['$message'].warning('您的数据不符合默认格式，请配置过滤器！')
         showMatching.value = true
         return
       }
-      targetData.value.option.dataset = newFunctionHandle(data, res, targetData.value.filter)
+      trueData.value.option.dataset = newFunctionHandle(data, res, trueData.value.filter)
       showMatching.value = true
       return
     }
@@ -154,7 +166,7 @@ const themeColor = computed(() => {
 })
 
 watchEffect(() => {
-  const filter = targetData.value?.filter
+  const filter = trueData.value?.filter
   if (lastFilter !== filter && firstFocus) {
     lastFilter = filter
     sendHandle()

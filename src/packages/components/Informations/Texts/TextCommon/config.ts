@@ -32,6 +32,7 @@ export const option = {
   paddingX: 10,
   paddingY: 10,
   textAlign: 'center', // 水平对齐方式
+  alignItems:'center',//垂直对齐方式
   fontWeight: 'normal',
 
   // 边框
@@ -42,7 +43,12 @@ export const option = {
   // 字间距
   letterSpacing: 5,
   writingMode: 'horizontal-tb',
-  backgroundColor: '#00000000'
+  backgroundColor: '#00000000',
+
+  ellipsis:0,
+  mEllipsisNum:3,
+  tooltip:false,
+  scroll:false,
 }
 
 export default class Config extends PublicConfigClass implements CreateComponentType {

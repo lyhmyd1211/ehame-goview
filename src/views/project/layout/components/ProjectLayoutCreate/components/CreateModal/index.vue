@@ -3,7 +3,7 @@
     <n-space size="large">
       <n-card class="card-box" hoverable>
         <template #header>
-          <n-text class="card-box-tite">{{ $t('project.create_tip') }}</n-text>
+          <n-text >创建项目</n-text>
         </template>
         <template #header-extra>
           <n-text @click="closeHandle">
@@ -13,20 +13,23 @@
           </n-text>
         </template>
         <n-space class="card-box-content" justify="center">
-          <n-button
-            size="large"
+          <n-space class="name" justify="center">
+            <label>项目名称:</label>
+            <n-input v-model:value="projectName"></n-input>
+            <n-button
             :disabled="item.disabled"
             v-for="item in typeList"
             :key="item.key"
             @click="btnHandle(item.key)"
           >
-            <component :is="item.title"></component>
-            <template #icon>
+            {{item.title}}
+            <!-- <template #icon>
               <n-icon size="18">
                 <component :is="item.icon"></component>
               </n-icon>
-            </template>
+            </template> -->
           </n-button>
+        </n-space>
         </n-space>
         <template #action></template>
       </n-card>
@@ -41,7 +44,6 @@ import { PageEnum, ChartEnum } from '@/enums/pageEnum'
 import { ResultEnum } from '@/enums/httpEnum'
 import { fetchPathByName, routerTurnByPath, renderLang, getUUID } from '@/utils'
 import { createProjectApi } from '@/api/path'
-
 const { FishIcon, CloseIcon } = icon.ionicons5
 const { StoreIcon, ObjectStorageIcon } = icon.carbon
 const showRef = ref(false)
@@ -53,33 +55,38 @@ const props = defineProps({
 
 const typeList = shallowRef([
   {
-    title: renderLang('project.new_project'),
+    title: '创建新项目',
     key: ChartEnum.CHART_HOME_NAME,
-    icon: FishIcon,
+    // icon: FishIcon,
     disabled: false
   },
-  {
-    title: renderLang('project.my_templete'),
-    key: PageEnum.BASE_HOME_TEMPLATE_NAME,
-    icon: ObjectStorageIcon,
-    disabled: true
-  },
-  {
-    title: renderLang('project.template_market'),
-    key: PageEnum.BASE_HOME_TEMPLATE_MARKET_NAME,
-    icon: StoreIcon,
-    disabled: true
-  }
+  // {
+  //   title: renderLang('project.my_templete'),
+  //   key: PageEnum.BASE_HOME_TEMPLATE_NAME,
+  //   icon: ObjectStorageIcon,
+  //   disabled: true
+  // },
+  // {
+  //   title: renderLang('project.template_market'),
+  //   key: PageEnum.BASE_HOME_TEMPLATE_MARKET_NAME,
+  //   icon: StoreIcon,
+  //   disabled: true
+  // }
 ])
 
 watch(() => props.show, newValue => {
   showRef.value = newValue
+  newValue&&(projectName.value = getUUID())
 })
 
 // 关闭对话框
 const closeHandle = () => {
   emit('close', false)
 }
+
+let name = getUUID()
+const projectName = ref(name)
+
 
 // 处理按钮点击
 const btnHandle = async (key: string) => {
@@ -89,7 +96,7 @@ const btnHandle = async (key: string) => {
         // 新增项目
         const res = await createProjectApi({
           // 项目名称
-          projectName: getUUID(),
+          projectName: projectName.value,
           // remarks
           remarks: null,
           // 图片地址
@@ -97,7 +104,6 @@ const btnHandle = async (key: string) => {
         })
         if(res && res.code === ResultEnum.SUCCESS) {
           window['$message'].success(window['$t']('project.create_success'))
-
           const { id } = res.data
           const path = fetchPathByName(ChartEnum.CHART_HOME_NAME, 'href')
           routerTurnByPath(path, [id], undefined, true)
@@ -133,6 +139,11 @@ $cardWidth: 570px;
       padding: 0px 10px;
       width: 100%;
     }
+  }
+  .name{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 </style>

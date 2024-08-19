@@ -9,6 +9,10 @@ export const option = {
   [COMPONENT_INTERACT_EVENT_KET]: ComponentInteractEventEnum.DATA,
   // 默认值
   modalTitle:'提示',
+  showTitle:true,
+  bg:'',
+  bgScaleType:'100%',
+  selectType:'100%',
   // 暴露配置内容给用户
   dataset: [] 
 }
@@ -17,7 +21,7 @@ export default class Config extends PublicConfigClass implements CreateComponent
   
   public isModalInstance = true
   public key = InputsDialogConfig.key
-  public attr = { ...chartInitConfig, w: 260, h: 300, zIndex: -1 }
+  public attr = { ...chartInitConfig, w: 1160, h: 780, zIndex: -1 }
   public chartConfig = cloneDeep(InputsDialogConfig)
   public interactActions = interactActions
   public option = cloneDeep(option)

@@ -21,7 +21,6 @@ import { isPreview } from '@/utils'
 import { DatasetComponent, GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
 import isObject from 'lodash/isObject'
 import cloneDeep from 'lodash/cloneDeep'
-
 const props = defineProps({
   themeSetting: {
     type: Object,
@@ -50,7 +49,7 @@ const option = computed(() => {
 // dataset 无法变更条数的补丁
 watch(
   () => props.chartConfig.option.dataset,
-  (newData: { dimensions: any }, oldData) => {
+  (newData: { dimensions: any,max?:number }, oldData) => {
     try {
       if (!isObject(newData) || !('dimensions' in newData)) return
       if (Array.isArray(newData?.dimensions)) {
@@ -85,5 +84,16 @@ watch(
   }
 )
 
-const { vChartRef } = useChartDataFetch(props.chartConfig, useChartEditStore)
+
+// watch(()=>props.chartConfig.option.series,(newData, oldData) => {
+//   vChartRef.value?.setOption(props.chartConfig.option,true)
+// })
+const { vChartRef } = useChartDataFetch(props.chartConfig, useChartEditStore,(newData)=>{
+  props.chartConfig.option.dataset = newData
+  console.log('柱状图',newData);
+  if (newData.markers) {
+    props.chartConfig.option.yAxis.max = props.chartConfig.option.dataset.max||newData.markers[0]?.dataset?.max
+  }
+  vChartRef.value?.setOption(props.chartConfig.option,true)
+})
 </script>

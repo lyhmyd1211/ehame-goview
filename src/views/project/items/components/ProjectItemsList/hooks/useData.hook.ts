@@ -38,7 +38,7 @@ export const useDataListInit = () => {
           createId: createUserId,
           time: createTime,
           image: indexImage,
-          release: state !== -1
+          release: state ===1
         }
       })
       setTimeout(() => {
@@ -108,7 +108,6 @@ export const useDataListInit = () => {
     httpErrorHandle()
   }
 
-  // 立即请求
   fetchList()
 
   return {

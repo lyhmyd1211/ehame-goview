@@ -19,7 +19,7 @@
           <span class="func-keyword">async {{ eventName }}</span> (e, components, echarts, node_modules) {
         </p>
         <p class="go-ml-4">
-          <n-code :code="(targetData.events.advancedEvents || {})[eventName] || ''" language="typescript"></n-code>
+          <n-code :code="(trueData.events.advancedEvents || {})[eventName] || ''" language="typescript"></n-code>
         </p>
         <p>}<span>,</span></p>
       </div>
@@ -167,7 +167,19 @@ import { icon } from '@/plugins'
 import { CreateComponentType } from '@/packages/index.d'
 import { EventLife } from '@/enums/eventEnum'
 
-const { targetData, chartEditStore } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 const { DocumentTextIcon, ChevronDownIcon, PencilIcon } = icon.ionicons5
 
 const EventLifeName = {
@@ -185,7 +197,7 @@ const showModal = ref(false)
 // 编辑区域控制
 const editTab = ref(EventLife.VNODE_MOUNTED)
 // events 函数模板
-let advancedEvents = ref({ ...targetData.value.events.advancedEvents })
+let advancedEvents = ref({ ...trueData.value.events.advancedEvents })
 // 事件错误标识
 const errorFlag = ref(false)
 
@@ -228,12 +240,12 @@ const saveEvents = () => {
   }
   if (Object.values(advancedEvents.value).join('').trim() === '') {
     // 清空事件
-    targetData.value.events.advancedEvents = {
+    trueData.value.events.advancedEvents = {
       vnodeBeforeMount: undefined,
       vnodeMounted: undefined
     }
   } else {
-    targetData.value.events.advancedEvents = { ...advancedEvents.value }
+    trueData.value.events.advancedEvents = { ...advancedEvents.value }
   }
   closeEvents()
 }
@@ -242,7 +254,7 @@ watch(
   () => showModal.value,
   (newData: boolean) => {
     if (newData) {
-      advancedEvents.value = { ...targetData.value.events.advancedEvents }
+      advancedEvents.value = { ...trueData.value.events.advancedEvents }
     }
   }
 )

@@ -53,7 +53,13 @@ import { useDataListInit } from './hooks/useData.hook'
 
 const { CopyIcon, EllipsisHorizontalCircleSharpIcon } = icon.ionicons5
 const { modalData, modalShow, closeModal, previewHandle, resizeHandle, editHandle } = useModalDataInit()
-const { loading, paginat, list, changeSize, changePage, releaseHandle, deleteHandle } = useDataListInit()
+const { loading, paginat, list, changeSize, changePage, releaseHandle, deleteHandle,fetchList } = useDataListInit()
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      fetchList()
+    }
+  });
+
 </script>
 
 <style lang="scss" scoped>

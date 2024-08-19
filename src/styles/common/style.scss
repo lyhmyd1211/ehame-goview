@@ -2,7 +2,6 @@
 @import "./format.scss";
 @import "./animation.scss";
 @import "./mixins/mixins.scss";
-
 // 过度
 .go-transition {
   transition: all 0.4s;
@@ -124,4 +123,8 @@
 }
 .go-d-block {
   display: block;
+}
+@font-face {
+  font-family: 'SourceHanSansCN-Normal';
+  src: url('@/assets/font/SourceHanSansCN-Normal.otf') format('opentype');
 }

@@ -71,7 +71,19 @@ import { newFunctionHandle } from '@/utils'
 
 const designStore = useDesignStore()
 const { HelpOutlineIcon, FlashIcon, PulseIcon, FishIcon } = icon.ionicons5
-const { targetData, chartEditStore } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 
 const {
   requestDataPond,
@@ -88,7 +100,7 @@ let lastFilter: any = undefined
 
 // 所选数据池
 const pondData = computed(() => {
-  const selectId = targetData.value.request.requestDataPondId
+  const selectId = trueData.value.request.requestDataPondId
   if (!selectId) return undefined
   const data = requestDataPond.value.filter(item => {
     return selectId === item.dataPondId
@@ -108,21 +120,21 @@ const controlModelHandle = () => {
 
 // 发送请求
 const sendHandle = async () => {
-  if (!targetData.value?.request) {
+  if (!trueData.value?.request) {
     window.$message.warning('请选择一个公共接口！')
     return
   }
   loading.value = true
   try {
-    const res = await customizeHttp(toRaw(targetData.value.request), toRaw(chartEditStore.getRequestGlobalConfig))
+    const res = await customizeHttp(toRaw(trueData.value.request), toRaw(chartEditStore.getRequestGlobalConfig))
     loading.value = false
     if (res) {
-      if (!res?.data && !targetData.value.filter) {
+      if (!res?.data && !trueData.value.filter) {
         window['$message'].warning('您的数据不符合默认格式，请配置过滤器！')
         showMatching.value = true
         return
       }
-      targetData.value.option.dataset = newFunctionHandle(res?.data, res, targetData.value.filter)
+      trueData.value.option.dataset = newFunctionHandle(res?.data, res, trueData.value.filter)
       showMatching.value = true
       return
     }
@@ -135,7 +147,7 @@ const sendHandle = async () => {
 }
 
 watchEffect(() => {
-  const filter = targetData.value?.filter
+  const filter = trueData.value?.filter
   if (lastFilter !== filter && firstFocus) {
     lastFilter = filter
     sendHandle()

@@ -9,10 +9,10 @@
     <template #ri-left>
       <slot name="ri-left"></slot>
     </template>
-    <template #ri-right>
+    <!-- <template #ri-right>
       <go-user-info></go-user-info>
       <slot name="ri-right"></slot>
-    </template>
+    </template> -->
   </layout-header>
 </template>
 <script setup lang="ts">

@@ -126,12 +126,14 @@ const modelShowHandle = () => {
 }
 
 // 复制预览地址
-const copyPreviewPath = (successText?: string, failureText?: string) => {
+const copyPreviewPath = (successText?: string, failureText?: string,closeMsg=false) => {
   if (isSupported) {
     copy()
     window['$message'].success(successText || '复制成功！')
-  } else {
-    window['$message'].error(failureText || '复制失败！')
+  } else if(!closeMsg) {
+    window['$message'].error(failureText || '因浏览器限制，复制失败！')
+  }else{
+    window['$message'].success(successText)
   }
 }
 
@@ -146,7 +148,7 @@ const sendHandle = async () => {
   if (res && res.code === ResultEnum.SUCCESS) {
     modelShowHandle()
     if (!release.value) {
-      copyPreviewPath('发布成功！已复制地址到剪贴板~', '发布成功！')
+      copyPreviewPath('发布成功！','',true)
     } else {
       window['$message'].success(`已取消发布`)
     }

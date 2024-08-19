@@ -158,7 +158,11 @@ export const useChartEditStore = defineStore({
       }
     },
     // 图表数组（需存储给后端）
-    componentList: []
+    componentList: [],
+
+    shadowList:[],
+
+    curApiData:{}
   }),
   getters: {
     getProjectInfo(): ProjectInfoType {
@@ -193,6 +197,12 @@ export const useChartEditStore = defineStore({
     },
     getModalList():ModalListType[]{
       return this.modalList
+    },
+    getShadowList():Array<CreateComponentType | CreateComponentGroupType> {
+      return this.shadowList
+    },
+    getCurApiData():any{
+      return this.curApiData
     }
   },
   actions: {
@@ -256,7 +266,7 @@ export const useChartEditStore = defineStore({
       // 无 id 清空
       if (!selectId) {
         this.targetChart.selectId = []
-        this.targetChart.selected = this.componentList.filter(el=>this.targetChart.selectId.indexOf(el.id)>-1)
+        this.targetChart.selected = []
         return
       }
       // 多选
@@ -264,7 +274,7 @@ export const useChartEditStore = defineStore({
         // 字符串
         if (isString(selectId)) {
           this.targetChart.selectId.push(selectId)
-          this.targetChart.selected = this.componentList.filter(el=>this.targetChart.selectId.indexOf(el.id)>-1)
+          this.targetChart.selected = this.componentList.filter(el=>selectId===el.id)
           return
         }
         // 数组
@@ -277,7 +287,7 @@ export const useChartEditStore = defineStore({
         // 字符串
         if (isString(selectId)) {
           this.targetChart.selectId = [selectId]
-          this.targetChart.selected = this.componentList.filter(el=>this.targetChart.selectId.indexOf(el.id)>-1)
+          this.targetChart.selected = this.componentList.filter(el=>selectId===el.id)
           return
         }
         // 数组
@@ -1059,14 +1069,19 @@ export const useChartEditStore = defineStore({
       
       let index = 0
       let attr = this.getComponentList[index].attr
+      let isMapAmapInfoWindow = false
       this.getTargetChart.selected.map(item=>{
         if (item.isModalInstance) {
+          console.log('item',item);
+          isMapAmapInfoWindow = item.key === 'MapAmapInfoWindow'
           index = this.fetchTargetIndex(item.id)
         }else{
           attr = this.getTargetChart.selected.filter(i=>!i.isModalInstance)[0].attr
         }
       })
-      this.getComponentList[index].attr = {...attr}
+      if (isMapAmapInfoWindow) {
+        this.getComponentList[index].attr = {...attr}
+      }
       this.setGroup(id,isHistory,true)
     },
 
@@ -1076,16 +1091,32 @@ export const useChartEditStore = defineStore({
     },
     /**设置弹出框临时数据 */
     setModalList(data:ModalListType){
+      console.log('设置',data);
       let list = this.modalList
       let index = list.findIndex(i=>i.modalId===data.modalId)
       if (index>=0) {
-        list[index] = data
+        list[index] = {...{isShow:!list[index].isShow},...data}
       }else{
         list.push(data)
       }
       this.$patch({
         modalList:list
       })
+    },
+    addShadowList(instance:any){
+      if (this.shadowList.some(i=>i.id===instance.id)) {
+        let index =this.shadowList.findIndex(e => e.id === instance.id)
+        if (index < 1 && index > this.getComponentList.length) return
+        this.shadowList[index] = instance
+      }else{
+        this.shadowList.push(instance)
+      }
+    },
+    setShadowList(list:any[]){
+      this.shadowList = [...list]
+    },
+    setCurApiData(cur:any){
+      this.curApiData = cur
     }
   }
 })

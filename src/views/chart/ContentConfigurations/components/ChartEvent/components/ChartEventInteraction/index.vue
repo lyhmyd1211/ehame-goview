@@ -12,13 +12,13 @@
     </template>
 
     <!-- 无数据 -->
-    <div v-if="!targetData.events.interactEvents.length" class="no-data go-flex-center">
+    <div v-if="!trueData.events.interactEvents.length" class="no-data go-flex-center">
       <img :src="noData" alt="暂无数据" />
       <n-text :depth="3">暂无内容</n-text>
     </div>
 
     <n-card
-      v-for="(item, cardIndex) in targetData.events.interactEvents"
+      v-for="(item, cardIndex) in trueData.events.interactEvents"
       :key="cardIndex"
       class="n-card-shallow"
       size="small"
@@ -58,7 +58,7 @@
                 <help-outline-icon></help-outline-icon>
               </n-icon>
             </template>
-            <n-text>不支持「静态组件」支持「组件」「公共APi」</n-text>
+            <n-text style="color: #fff">不支持「静态组件」支持「组件」「公共APi」</n-text>
           </n-tooltip>
         </template>
         <n-select
@@ -133,12 +133,24 @@ import { goDialog } from '@/utils'
 import { useTargetData } from '../../../hooks/useTargetData.hook'
 
 const { CloseIcon, AddIcon, HelpOutlineIcon } = icon.ionicons5
-const { targetData, chartEditStore } = useTargetData()
+const { targetData,chartEditStore } = useTargetData()
+const trueData = computed(()=>{
+  const selectId = chartEditStore.getTargetChart.selectId
+  if (selectId&&selectId.length>0) {
+    if (targetData.value?.id!==selectId[0]) {
+      let data = targetData.value?.groupList?.filter(i=>i.id===selectId[0])
+      if (data&&data.length>0) {
+        return data[0]
+      }
+    }
+  }
+  return targetData.value
+})
 const requestParamsTypeList = [RequestParamsTypeEnum.PARAMS, RequestParamsTypeEnum.HEADER]
 
 // 获取组件交互事件列表
 const interactActions = computed(() => {
-  const interactActions = targetData.value.interactActions
+  const interactActions = trueData.value.interactActions
   if (!interactActions) return []
   return interactActions.map(value => ({
     label: value.interactName,
@@ -148,7 +160,7 @@ const interactActions = computed(() => {
 
 // 获取组件事件
 const option = computed(() => {
-  return targetData.value.option
+  return trueData.value.option
 })
 
 // 绑定组件数据 request
@@ -164,8 +176,8 @@ const fnGetRequest = (id: string | undefined, key: RequestParamsTypeEnum) => {
 
 // 查询结果
 const fnDimensionsAndSource = (interactOn: InteractEventOn | undefined) => {
-  if (!interactOn || !targetData.value.interactActions) return []
-  const tableData = targetData.value.interactActions.find(item => {
+  if (!interactOn || !trueData.value.interactActions) return []
+  const tableData = trueData.value.interactActions.find(item => {
     return item.interactType === interactOn
   })
 
@@ -194,13 +206,13 @@ const fnEventsOptions = (): Array<SelectOption | SelectGroupOption> => {
 
   const filterOptionList = fnFlattern(chartEditStore.componentList).filter(item => {
     // 排除自己
-    const isNotSelf = item.id !== targetData.value.id
+    const isNotSelf = item.id !== trueData.value.id
     // 排除静态组件
     const isNotStatic = item.chartConfig.chartFrame !== ChartFrameEnum.STATIC
     // 排除分组
     const isNotGroup = !item.isGroup
 
-    return isNotSelf && isNotStatic && isNotGroup
+    return  isNotStatic && isNotGroup
   })
 
   const mapOptionList = filterOptionList.map(item => ({
@@ -217,7 +229,7 @@ const fnEventsOptions = (): Array<SelectOption | SelectGroupOption> => {
     type: 'requestDataPond'
   }))
   const tarArr = requestDataPond.concat(mapOptionList)
-  targetData.value.events.interactEvents?.forEach(iaItem => {
+  trueData.value.events.interactEvents?.forEach(iaItem => {
     tarArr.forEach(optionItem => {
       if (optionItem.id === iaItem.interactComponentId) {
         optionItem.disabled = true
@@ -230,7 +242,7 @@ const fnEventsOptions = (): Array<SelectOption | SelectGroupOption> => {
 
 // 新增模块
 const evAddEventsFn = () => {
-  targetData.value.events.interactEvents.push({
+  trueData.value.events.interactEvents.push({
     interactOn: undefined,
     interactComponentId: undefined,
     interactFn: {}
@@ -242,7 +254,7 @@ const evDeleteEventsFn = (index: number) => {
   goDialog({
     message: '是否删除此关联交互模块?',
     onPositiveCallback: () => {
-      targetData.value.events.interactEvents.splice(index, 1)
+      trueData.value.events.interactEvents.splice(index, 1)
     }
   })
 }
